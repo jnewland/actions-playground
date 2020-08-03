@@ -1,13 +1,14 @@
-name: pull_request.synchronize
+name: conflict
 on:
   pull_request:
     types:
       - synchronize
 jobs:
-  uptime:
+  conflict:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
+      - name: conflict
         env:
+          FOO: bar
           GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+        run: echo "$GITHUB_CONTEXT"; echo $FOO
