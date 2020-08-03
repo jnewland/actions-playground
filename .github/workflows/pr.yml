@@ -4,10 +4,10 @@ on:
     types:
       - synchronize
 jobs:
-  test:
+  third:
     runs-on: ubuntu-latest
     steps:
-    - name: second
+    - name: debug
       run: |
         echo "Ref: $GITHUB_REF"
         echo "Sha: $GITHUB_SHA"
