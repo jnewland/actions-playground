@@ -1,0 +1,12 @@
+name: pull_request.synchronize
+on:
+  pull_request:
+    types:
+      - synchronize
+jobs:
+  uptime:
+    runs-on: ubuntu-latest
+    steps:
+    - name: debug
+      run: |
+        uptime
