@@ -4,10 +4,10 @@ on:
     types:
       - synchronize
 jobs:
-  seventh:
+  eighth:
     runs-on: ubuntu-latest
     steps:
-    - name: debug
-      run: |
-        echo "Ref: $GITHUB_REF"
-        echo "Sha: $GITHUB_SHA"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
