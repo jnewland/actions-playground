@@ -7,7 +7,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: first
+    - name: second
       run: |
         echo "Ref: $GITHUB_REF"
         echo "Sha: $GITHUB_SHA"
