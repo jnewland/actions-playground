@@ -61,7 +61,7 @@ jobs:
 
               const failed = (status) => status.state == 'failed' || status.state == 'error'
 
-              const matchingStatuses = result.data.statuses.find(matchesContext);
+              const matchingStatuses = result.data.statuses.filter(matchesContext);
               if (Array.isArray(matchingStatuses)) {
                 if (matchingStatuses.every(success)) {
                   if (matchingStatuses.every(hasGoodDescription)) {
@@ -70,7 +70,9 @@ jobs:
                   }
                   console.log(`statuses matching ${process.env.CONTEXT_INCLUDES} found, not all done yet`);
                 } 
-                if (matchingStatuses.find(failed)) {
+
+                // fail fast if a matching status has failed
+                if (matchingStatuses.some(failed)) {
                   core.setFailed(`a status matching ${process.env.CONTEXT_INCLUDES} failed`);
                   break;
                 }
