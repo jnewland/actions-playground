@@ -72,7 +72,7 @@ jobs:
               }
 
               core.setFailed(`No statuses matching ${process.env.CONTEXT} found yet`);
-              console.log(result);
+              console.log(result.data.statuses);
               await new Promise(r => setTimeout(r, 2000));
             }
 
