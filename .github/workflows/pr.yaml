@@ -38,11 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v3
+        env:
+          CONTEXT: test
+          DESCRIPTION: good string
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          env:
-            CONTEXT: test
-            DESCRIPTION: good string
           script: |
             while (true) {
               const result = await github.repos.getCombinedStatusForRef({
