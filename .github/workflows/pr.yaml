@@ -118,8 +118,7 @@ jobs:
                 name: process.env.LABEL
               })
             } catch (e) {
-              if (e.status == 404) (
-                break;
-              )
-              throw(e);
+              if (e.status != 404) {
+                throw(e);
+              }
             }
