@@ -40,12 +40,12 @@ jobs:
       - uses: actions/github-script@v3
         timeout-minutes: 3
         id: statuses
-        result-encoding: string
         env:
           CONTEXT_INCLUDES: test
           DESCRIPTION_INCLUDES: good string
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
           script: |
             while (true) {
               const result = await github.repos.getCombinedStatusForRef({
