@@ -73,7 +73,7 @@ jobs:
                 }
               }
 
-              core.setFailed(`No statuses matching ${process.env.CONTEXT} found yet`);
+              console.log(`No statuses matching ${process.env.CONTEXT} found yet`);
               if (process.env.DEBUG == "true") {
                 console.log(result.data.statuses);
               }
