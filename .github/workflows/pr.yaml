@@ -1,14 +1,56 @@
-name: conflict
+name: pr
 on:
   pull_request:
     types:
       - synchronize
+      - opened
 jobs:
-  conflict:
+  status:
     runs-on: ubuntu-latest
     steps:
-      - name: conflict
-        env:
-          FOO: bar
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"; echo $FOO
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.repos.createCommitStatus({
+              owner:   context.repo.owner,
+              repo:    context.repo.repo,
+              sha:     context.sha
+              state:   'pending',
+              context: 'test',
+            });
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const result = await github.repos.listCommitStatusesForRef({
+              owner:   context.repo.owner,
+              repo:    context.repo.repo,
+              sha:     context.sha,
+            });
+            console.log(result)
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.repos.createCommitStatus({
+              owner:       context.repo.owner,
+              repo:        context.repo.repo,
+              sha:         context.sha
+              state:       'success',
+              description: 'some string',
+              context:     'test',
+            });
+
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const result = await github.repos.listCommitStatusesForRef({
+              owner:   context.repo.owner,
+              repo:    context.repo.repo,
+              sha:     context.sha,
+            });
+            console.log(result)
