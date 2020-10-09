@@ -34,7 +34,7 @@ jobs:
               context:     'test',
             });
 
-  wait-for-status:
+  wait-for-status-with-matching-description:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v3
@@ -42,7 +42,6 @@ jobs:
         env:
           CONTEXT_INCLUDES: test
           DESCRIPTION_INCLUDES: good string
-          DEBUG: 'true'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -68,7 +67,6 @@ jobs:
                     console.log(`all statuses matching ${process.env.CONTEXT_INCLUDES} have succeeded and have output matching ${process.env.DESCRIPTION_INCLUDES}`);
                     break;
                   }
-                  console.log(`statuses matching ${process.env.CONTEXT_INCLUDES} found, not all done yet`);
                 } 
 
                 // fail fast if a matching status has failed
@@ -76,15 +74,41 @@ jobs:
                   core.setFailed(`a status matching ${process.env.CONTEXT_INCLUDES} failed`);
                   break;
                 }
+
+                // explain why we're still processing
+                console.log(`statuses matching ${process.env.CONTEXT_INCLUDES} found, not all done yet`);
+              } else {
+                console.log(`No statuses matching ${process.env.CONTEXT_INCLUDES} found yet`);
               }
 
-              console.log(`No statuses matching ${process.env.CONTEXT_INCLUDES} found yet`);
-              if (process.env.DEBUG == "true") {
-                console.log(result.data.statuses);
-                console.log(matchingStatuses);
-                console.log(typeof matchingStatuses);
-              }
               await new Promise(r => setTimeout(r, 2000));
             }
 
+      - uses: actions/github-script@v3
+        if: success()
+        env:
+          LABEL: matched
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            await github.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: [process.env.LABEL]
+            })
 
+      - uses: actions/github-script@v3
+        if: failure()
+        env:
+          LABEL: matched
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            // no await here because failure is okay
+            github.issues.removeLabel({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.LABEL
+            })
