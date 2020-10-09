@@ -50,7 +50,7 @@ jobs:
               const success = (status) => status.state == 'success'
               const hasGoodDescription = (status) => status.description == 'good string'
               const failed = (status) => status.state == 'failed'
-              if (result.data.every(success) && result.data.every(hasGoodDescription)) {
+              if (result.data.length > 0 && result.data.every(success) && result.data.every(hasGoodDescription)) {
                 console.log("everything has succeeded");
                 break;
               }
