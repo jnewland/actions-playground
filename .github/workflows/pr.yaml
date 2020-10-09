@@ -110,10 +110,16 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            // no await here because failure is okay
-            github.issues.removeLabel({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: process.env.LABEL
-            })
+            try {
+              await github.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: process.env.LABEL
+              })
+            } catch (e) {
+              if (e.status == 404) (
+                break;
+              )
+              throw(e);
+            }
