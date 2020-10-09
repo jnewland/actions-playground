@@ -90,7 +90,7 @@ jobs:
             }
 
       - uses: actions/github-script@v3
-        if: steps.statuses.outputs.result == 'true'
+        if: steps.statuses.outputs.result == 'matched'
         env:
           LABEL: matched
         with:
@@ -104,7 +104,7 @@ jobs:
             })
 
       - uses: actions/github-script@v3
-        if: steps.statuses.outputs.result != 'true'
+        if: steps.statuses.outputs.result != 'matched'
         env:
           LABEL: matched
         with:
