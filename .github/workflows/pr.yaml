@@ -39,6 +39,8 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         timeout-minutes: 3
+        id: statuses
+        result-encoding: string
         env:
           CONTEXT_INCLUDES: test
           DESCRIPTION_INCLUDES: good string
@@ -65,13 +67,16 @@ jobs:
                 if (matchingStatuses.every(success)) {
                   if (matchingStatuses.every(hasGoodDescription)) {
                     console.log(`all statuses matching ${process.env.CONTEXT_INCLUDES} have succeeded and have output matching ${process.env.DESCRIPTION_INCLUDES}`);
+                    return 'matched';
+                  } else {
+                    console.log(`all statuses matching ${process.env.CONTEXT_INCLUDES} have succeeded, but some don't match ${process.env.DESCRIPTION_INCLUDES}`);
                     break;
                   }
                 } 
 
                 // fail fast if a matching status has failed
                 if (matchingStatuses.some(failed)) {
-                  core.setFailed(`a status matching ${process.env.CONTEXT_INCLUDES} failed`);
+                  console.log(`a status matching ${process.env.CONTEXT_INCLUDES} failed`);
                   break;
                 }
 
@@ -85,7 +90,7 @@ jobs:
             }
 
       - uses: actions/github-script@v3
-        if: success()
+        if: steps.statuses.outputs.result == 'true'
         env:
           LABEL: matched
         with:
@@ -99,7 +104,7 @@ jobs:
             })
 
       - uses: actions/github-script@v3
-        if: failure()
+        if: steps.statuses.outputs.result != 'true'
         env:
           LABEL: matched
         with:
