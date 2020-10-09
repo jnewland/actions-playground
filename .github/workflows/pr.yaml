@@ -30,7 +30,7 @@ jobs:
               repo:        context.repo.repo,
               sha:         context.payload.pull_request.head.sha,
               state:       'success',
-              description: 'good string',
+              description: 'bad string',
               context:     'test',
             });
 
