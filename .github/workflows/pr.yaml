@@ -61,6 +61,7 @@ jobs:
                 }
               }
               console.log("waiting...");
+              console.log(result.data);
               await new Promise(r => setTimeout(r, 2000));
             }
 
