@@ -38,9 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v3
+        timeout-minutes: 3
         env:
           CONTEXT: test
           DESCRIPTION: good string
+          DEBUG: 'true'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -57,7 +59,7 @@ jobs:
               const failed = (status) => status.state == 'failed' || status.state == 'error'
 
               const matchingStatuses = result.data.statuses.find(matchesContext);
-              if (matchingStatuses.length > 0) {
+              if (matchingStatuses) {
                 if (matchingStatuses.every(success)) {
                   if (matchingStatuses.every(hasGoodDescription)) {
                     console.log(`all statuses matching ${process.env.CONTEXT} have succeeded and have output matching ${process.env.DESCRIPTION}`);
@@ -72,7 +74,9 @@ jobs:
               }
 
               core.setFailed(`No statuses matching ${process.env.CONTEXT} found yet`);
-              console.log(result.data.statuses);
+              if (process.env.DEBUG == "true") {
+                console.log(result.data.statuses);
+              }
               await new Promise(r => setTimeout(r, 2000));
             }
 
