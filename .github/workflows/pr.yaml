@@ -55,7 +55,7 @@ jobs:
                   console.log("everything has succeeded");
                   break;
                 }
-                if (result.data.select(failed)) {
+                if (result.data.find(failed)) {
                   core.setFailed('a status failed');
                   break;
                 }
