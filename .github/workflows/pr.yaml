@@ -50,13 +50,15 @@ jobs:
               const success = (status) => status.state == 'success'
               const hasGoodDescription = (status) => status.description == 'good string'
               const failed = (status) => status.state == 'failed'
-              if (result.data.length > 0 && result.data.every(success) && result.data.every(hasGoodDescription)) {
-                console.log("everything has succeeded");
-                break;
-              }
-              if (result.data.select(failed)) {
-                core.setFailed('a status failed');
-                break;
+              if (result.data.length > 0) {
+                if (result.data.every(success) && result.data.every(hasGoodDescription)) {
+                  console.log("everything has succeeded");
+                  break;
+                }
+                if (result.data.select(failed)) {
+                  core.setFailed('a status failed');
+                  break;
+                }
               }
               console.log("waiting...");
               await new Promise(r => setTimeout(r, 2000));
