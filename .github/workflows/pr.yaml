@@ -40,8 +40,8 @@ jobs:
       - uses: actions/github-script@v3
         timeout-minutes: 3
         env:
-          CONTEXT: test
-          DESCRIPTION: good string
+          CONTEXT_INCLUDES: test
+          DESCRIPTION_INCLUDES: good string
           DEBUG: 'true'
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -53,9 +53,9 @@ jobs:
                 ref:     context.payload.pull_request.head.sha,
               });
 
-              const matchesContext = (status) => status.context.includes(process.env.CONTEXT)
+              const matchesContext = (status) => status.context.includes(process.env.CONTEXT_INCLUDES)
 
-              const hasGoodDescription = (status) => status.description.includes(process.env.DESCRIPTION)
+              const hasGoodDescription = (status) => status.description.includes(process.env.DESCRIPTION_INCLUDES)
 
               const success = (status) => status.state == 'success'
 
@@ -65,20 +65,22 @@ jobs:
               if (Array.isArray(matchingStatuses)) {
                 if (matchingStatuses.every(success)) {
                   if (matchingStatuses.every(hasGoodDescription)) {
-                    console.log(`all statuses matching ${process.env.CONTEXT} have succeeded and have output matching ${process.env.DESCRIPTION}`);
+                    console.log(`all statuses matching ${process.env.CONTEXT_INCLUDES} have succeeded and have output matching ${process.env.DESCRIPTION_INCLUDES}`);
                     break;
                   }
-                  console.log(`statuses matching ${process.env.CONTEXT} found, not all done yet`);
+                  console.log(`statuses matching ${process.env.CONTEXT_INCLUDES} found, not all done yet`);
                 } 
                 if (matchingStatuses.find(failed)) {
-                  core.setFailed(`a status matching ${process.env.CONTEXT} failed`);
+                  core.setFailed(`a status matching ${process.env.CONTEXT_INCLUDES} failed`);
                   break;
                 }
               }
 
-              console.log(`No statuses matching ${process.env.CONTEXT} found yet`);
+              console.log(`No statuses matching ${process.env.CONTEXT_INCLUDES} found yet`);
               if (process.env.DEBUG == "true") {
                 console.log(result.data.statuses);
+                console.log(matchingStatuses);
+                console.log(typeof matchingStatuses);
               }
               await new Promise(r => setTimeout(r, 2000));
             }
