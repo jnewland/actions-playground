@@ -59,7 +59,7 @@ jobs:
               const failed = (status) => status.state == 'failed' || status.state == 'error'
 
               const matchingStatuses = result.data.statuses.find(matchesContext);
-              if (matchingStatuses) {
+              if (Array.isArray(matchingStatuses)) {
                 if (matchingStatuses.every(success)) {
                   if (matchingStatuses.every(hasGoodDescription)) {
                     console.log(`all statuses matching ${process.env.CONTEXT} have succeeded and have output matching ${process.env.DESCRIPTION}`);
