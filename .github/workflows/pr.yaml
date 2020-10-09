@@ -53,9 +53,12 @@ jobs:
                 ref:     context.payload.pull_request.head.sha,
               });
 
-              const matchesContext => (status) => status.context.includes(process.env.CONTEXT)
-              const hasGoodDescription => (status) => status.description.includes(process.env.DESCRIPTION)
+              const matchesContext = (status) => status.context.includes(process.env.CONTEXT)
+
+              const hasGoodDescription = (status) => status.description.includes(process.env.DESCRIPTION)
+
               const success = (status) => status.state == 'success'
+
               const failed = (status) => status.state == 'failed' || status.state == 'error'
 
               const matchingStatuses = result.data.statuses.find(matchesContext);
