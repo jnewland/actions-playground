@@ -15,7 +15,7 @@ jobs:
             github.repos.createCommitStatus({
               owner:   context.repo.owner,
               repo:    context.repo.repo,
-              sha:     context.sha
+              sha:     context.sha,
               state:   'pending',
               context: 'test',
             });
@@ -38,7 +38,7 @@ jobs:
             github.repos.createCommitStatus({
               owner:       context.repo.owner,
               repo:        context.repo.repo,
-              sha:         context.sha
+              sha:         context.sha,
               state:       'success',
               description: 'some string',
               context:     'test',
