@@ -24,7 +24,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            await new Promise(r => setTimeout(r, 10000));
+            await new Promise(r => setTimeout(r, 30000));
             await github.repos.createCommitStatus({
               owner:       context.repo.owner,
               repo:        context.repo.repo,
@@ -61,6 +61,5 @@ jobs:
               console.log("waiting...");
               await new Promise(r => setTimeout(r, 2000));
             }
-            console.log(result);
 
 
