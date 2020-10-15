@@ -20,7 +20,7 @@ jobs:
           script: |
             var prs = [];
 
-            if (context.payload.sha && const.payload.context == 'mergeable') {
+            if (context.payload.sha && context.payload.context == 'mergeable') {
               const statusPrs = await github.repos.listPullRequestsAssociatedWithCommit({
                 ...context.repo,
                 commit_sha: context.payload.sha
