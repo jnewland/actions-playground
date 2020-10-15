@@ -21,8 +21,8 @@ jobs:
               return;
             }
             prs.data.forEach(function(pr) {
-              if (pr.state != 'open'){
-                continue;
+              if (pr.state != 'open') {
+                return;
               }
               console.log('html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`)
               if (pr.mergeable == 'true') {
