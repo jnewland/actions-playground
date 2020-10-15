@@ -4,6 +4,7 @@ on:
     types:
       - synchronize
       - opened
+      - ready_for_review
 
 env:
   LABEL: mergeable
