@@ -35,7 +35,7 @@ jobs:
                   pull_number: pr.number
                 });
                 mergeable = pr.data.mergeable;
-                console.log('html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`);
+                console.log(`html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`);
               }
               if (mergeable == 'true') {
                 await github.issues.addLabels({
