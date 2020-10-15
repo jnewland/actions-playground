@@ -28,7 +28,7 @@ jobs:
               state:       'success',
               context:     process.env.LABEL,
               description: 'Mergeable status will be checked in the background.',
-              target_url:  `${context.payload.pull_request.head.html_url}/actions?query=workflow:mergeable`
+              target_url:  `${context.payload.pull_request.head.repo.html_url}/actions?query=workflow:mergeable`
             });
   process-mergeable-check:
     runs-on: ubuntu-latest
