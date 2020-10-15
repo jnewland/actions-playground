@@ -4,9 +4,9 @@ on:
     types:
       - opened
       - synchronize
-  check_suite:
-    types:
-      - completed
+      - ready_for_review
+      - review_requested
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,3 +15,22 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
+
+  dispatch-mergeable-check:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: dispatch-mergeable-check
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.MACHINE_USER_TOKEN }}
+          script: |
+            await github.repos.createCommitStatus({
+              ...context.repo,
+              sha:         context.payload.pull_request.head.sha,
+              state:       'success',
+              context:     'mergeable',
+              description: 'Mergeable status will be checked in the background.',
+              target_url:  `${context.payload.pull_request.head.repo.html_url}/actions?query=workflow:mergeable`
+            });
