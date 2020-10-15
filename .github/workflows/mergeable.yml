@@ -8,6 +8,7 @@ on:
 
 env:
   LABEL: mergeable
+  UPDATE_MERGEABLE_BUT_BEHIND: 'true'
   RETRY_INTERVAL: "5000"
 
 jobs:
@@ -17,6 +18,7 @@ jobs:
       - uses: actions/github-script@v3
         timeout-minutes: 30
         with:
+          github-token: ${{ secrets.MACHINE_USER_TOKEN }}
           script: |
             var prs = [];
 
@@ -43,23 +45,30 @@ jobs:
               }
               console.log(`html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`);
               var mergeable = pr.mergeable;
+              var mergeable_state = pr.mergeable_state;
               while (mergeable == null) {
                 await new Promise(r => setTimeout(r, ${{ env.RETRY_INTERVAL }}));
                 const updatedPr = await github.pulls.get({
                   ...context.repo,
                   pull_number: pr.number
                 });
-                console.log(updatedPr);
                 console.log(`html_url=${updatedPr.data.html_url} mergeable=${updatedPr.data.mergeable} mergeable_state=${updatedPr.data.mergeable_state}`);
                 mergeable = updatedPr.data.mergeable;
+                mergeable_state = updatedPr.data.mergeable;
               }
-              if (mergeable) {
+              if (mergeable && mergeable_state == "clean") {
                 await github.issues.addLabels({
                   ...context.repo,
                   issue_number: pr.number,
                   labels: [process.env.LABEL]
                 })
               } else {
+                if (mergeable_state == "behind" && process.env.UPDATE_MERGEABLE_BUT_BEHIND == 'true') {
+                  github.pulls.updateBranch({
+                    ...context.repo,
+                    pull_number: pr.number
+                  });
+                }
                 try {
                   await github.issues.removeLabel({
                     ...context.repo,
