@@ -5,33 +5,63 @@ on:
       - synchronize
       - opened
       - ready_for_review
+  status:
 
 env:
   LABEL: mergeable
 
 jobs:
-  mergeable:
+  dispatch-mergeable-check:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: create status
+        uses: actions/github-script@v3
+        env:
+          CONTEXT: Fake Terraform Cloud/Flatfile/${{ matrix.environment }}
+        with:
+          github-token: ${{ secrets.MACHINE_USER_TOKEN }}
+          script: |
+            await github.repos.createCommitStatus({
+              ...context.repo,
+              sha:         context.payload.pull_request.head.sha,
+              state:       'success',
+              context:     process.env.LABEL,
+              description: 'Mergeable status will be checked in the background.',
+              target_url:  `${context.payload.pull_request.head.html_url}/actions?query=workflow:mergeable`
+            });
+  process-mergeable-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'status'
     steps:
       - uses: actions/github-script@v3
         with:
           script: |
-            if (context.payload.pull_request.mergeable == 'true') {
-              await github.issues.addLabels({
-                ...context.repo,
-                issue_number: context.issue.number,
-                labels: [process.env.LABEL]
-              })
-            } else {
-              try {
-                await github.issues.removeLabel({
+            const prs = await github.repos.listPullRequestsAssociatedWithCommit({
+              ...context.repo,
+              commit_sha: context.payload.sha
+            })
+            if (prs.data.length === 0) {
+              return;
+            }
+            for (const pr of pr.data) {
+              if (pr.mergeable == 'true') {
+                await github.issues.addLabels({
                   ...context.repo,
-                  issue_number: context.issue.number,
-                  name: process.env.LABEL
+                  issue_number: pr.number,
+                  labels: [process.env.LABEL]
                 })
-              } catch (e) {
-                if (e.status != 404) {
-                  throw(e);
+              } else {
+                try {
+                  await github.issues.removeLabel({
+                    ...context.repo,
+                    issue_number: pr.number,
+                    name: process.env.LABEL
+                  })
+                } catch (e) {
+                  if (e.status != 404) {
+                    throw(e);
+                  }
                 }
               }
             }
