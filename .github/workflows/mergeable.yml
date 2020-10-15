@@ -26,7 +26,7 @@ jobs:
               if (pr.state != 'open') {
                 return;
               }
-              console.log('html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`)
+              console.log(`html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`);
               var mergeable = pr.mergeable;
               while (mergeable != 'null') {
                 await new Promise(r => setTimeout(r, ${{ env.RETRY_INTERVAL }}));
