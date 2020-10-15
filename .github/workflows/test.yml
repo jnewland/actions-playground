@@ -4,6 +4,9 @@ on:
     types:
       - opened
       - synchronize
+  check_suite:
+    types:
+      - completed
 jobs:
   test:
     runs-on: ubuntu-latest
