@@ -13,7 +13,6 @@ env:
 jobs:
   process-mergeable-check:
     runs-on: ubuntu-latest
-    if: github.event_name == 'status'
     steps:
       - uses: actions/github-script@v3
         timeout-minutes: 30
