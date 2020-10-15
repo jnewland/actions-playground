@@ -30,12 +30,13 @@ jobs:
               var mergeable = pr.mergeable;
               while (mergeable == null) {
                 await new Promise(r => setTimeout(r, ${{ env.RETRY_INTERVAL }}));
-                const updatedPr = github.pulls.get({
+                const updatedPr = await github.pulls.get({
                   ...context.repo,
                   pull_number: pr.number
                 });
-                mergeable = updatedPr.mergeable;
-                console.log(`html_url=${updatedPr.html_url} mergeable=${updatedPr.mergeable} mergeable_state=${updatedPr.mergeable_state}`);
+                console.log(updatedPr);
+                console.log(`html_url=${updatedPr.data.html_url} mergeable=${updatedPr.data.mergeable} mergeable_state=${updatedPr.data.mergeable_state}`);
+                mergeable = updatedPr.data.mergeable;
               }
               if (mergeable == 'true') {
                 await github.issues.addLabels({
