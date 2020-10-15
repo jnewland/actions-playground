@@ -2,9 +2,13 @@ name: mergeable
 on:
   # observe our generated statuses and check on the PRs they're related to
   status:
+  # allow manually triggering a re-check
   workflow_dispatch:
-  # TODO also trigger on a schedule to remove it
-  # schedule:
+  # check when things are pushed to the default branch too
+  push:
+    branches:
+      - main
+      - master  
 
 env:
   LABEL: mergeable
@@ -34,7 +38,9 @@ jobs:
             } else {
               const opts = github.pulls.list.endpoint.merge({
                 ...context.repo,
-                state: 'open'
+                state: 'open',
+                sort: 'updated',
+                direction: 'desc'
               })
               var prs = await github.paginate(opts);
             }
