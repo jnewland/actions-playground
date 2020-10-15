@@ -16,6 +16,10 @@ on:
     branches:
       - main
       - master  
+  
+  schedule:
+    - cron:  '*/15 * * * *'
+
 
 env:
   LABEL: mergeable
@@ -24,6 +28,7 @@ env:
 
 jobs:
   dispatch-mergeable-check:
+    # needs: your-slowest-other-workflow
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
