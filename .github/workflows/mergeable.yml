@@ -1,0 +1,36 @@
+name: mergeable
+on:
+  pull_request:
+    types:
+      - synchronize
+      - opened
+
+env:
+  LABEL: mergeable
+
+jobs:
+  mergeable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          script: |
+            if (context.payload.pull_request.mergeable == 'true') {
+              await github.issues.addLabels({
+                ...context.repo,
+                issue_number: context.issue.number,
+                labels: [process.env.LABEL]
+              })
+            } else {
+              try {
+                await github.issues.removeLabel({
+                  ...context.repo,
+                  issue_number: context.issue.number,
+                  name: process.env.LABEL
+                })
+              } catch (e) {
+                if (e.status != 404) {
+                  throw(e);
+                }
+              }
+            }
