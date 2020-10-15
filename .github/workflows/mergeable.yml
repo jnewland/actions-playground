@@ -28,14 +28,14 @@ jobs:
               }
               console.log(`html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`);
               var mergeable = pr.mergeable;
-              while (mergeable != 'null') {
+              while (mergeable == null) {
                 await new Promise(r => setTimeout(r, ${{ env.RETRY_INTERVAL }}));
                 const updatedPr = github.pulls.get({
                   ...context.repo,
                   pull_number: pr.number
                 });
-                mergeable = updatedPr.data.mergeable;
-                console.log(`html_url=${updatedPr.data.html_url} mergeable=${updatedPr.data.mergeable} mergeable_state=${updatedPr.data.mergeable_state}`);
+                mergeable = updatedPr.mergeable;
+                console.log(`html_url=${updatedPr.html_url} mergeable=${updatedPr.mergeable} mergeable_state=${updatedPr.mergeable_state}`);
               }
               if (mergeable == 'true') {
                 await github.issues.addLabels({
