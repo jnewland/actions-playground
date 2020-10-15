@@ -1,5 +1,12 @@
 name: mergeable
 on:
+  # kick off a mergeable check in response to events that immediately precede review
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+      - review_requested
   # observe our generated statuses and check on the PRs they're related to
   status:
   # allow manually triggering a re-check
@@ -12,12 +19,31 @@ on:
 
 env:
   LABEL: mergeable
-  UPDATE_MERGEABLE_BUT_BEHIND: 'true'
+  UPDATE_MERGEABLE_BUT_BEHIND: "true"
   RETRY_INTERVAL: "5000"
 
 jobs:
+  dispatch-mergeable-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: dispatch-mergeable-check
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.MACHINE_USER_TOKEN }}
+          script: |
+            await github.repos.createCommitStatus({
+              ...context.repo,
+              sha:         context.payload.pull_request.head.sha,
+              state:       'success',
+              context:     'mergeable',
+              description: 'Mergeable status will be checked in the background.',
+              target_url:  `${context.payload.pull_request.head.repo.html_url}/actions?query=workflow:mergeable`
+            });
+
   process-mergeable-check:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
     steps:
       - uses: actions/github-script@v3
         timeout-minutes: 30
@@ -60,7 +86,7 @@ jobs:
                 });
                 console.log(`html_url=${updatedPr.data.html_url} mergeable=${updatedPr.data.mergeable} mergeable_state=${updatedPr.data.mergeable_state}`);
                 mergeable = updatedPr.data.mergeable;
-                mergeable_state = updatedPr.data.mergeable;
+                mergeable_state = updatedPr.data.mergeable_state;
               }
               if (mergeable && mergeable_state == "clean") {
                 await github.issues.addLabels({
@@ -69,7 +95,7 @@ jobs:
                   labels: [process.env.LABEL]
                 })
               } else {
-                if (mergeable_state == "behind" && process.env.UPDATE_MERGEABLE_BUT_BEHIND == 'true') {
+                if (mergeable_state == "behind" && ${{ env.UPDATE_MERGEABLE_BUT_BEHIND }}) {
                   github.pulls.updateBranch({
                     ...context.repo,
                     pull_number: pr.number
