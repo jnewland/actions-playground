@@ -4,6 +4,7 @@ on:
 
 env:
   LABEL: mergeable
+  RETRY_INTERVAL: "5000"
 
 jobs:
   process-mergeable-check:
@@ -11,6 +12,7 @@ jobs:
     if: github.event_name == 'status'
     steps:
       - uses: actions/github-script@v3
+        timeout-minutes: 30
         with:
           script: |
             const prs = await github.repos.listPullRequestsAssociatedWithCommit({
@@ -21,11 +23,21 @@ jobs:
               return;
             }
             prs.data.forEach(function(pr) {
-              if (pr.state != 'open'){
-                continue;
+              if (pr.state != 'open') {
+                return;
               }
               console.log('html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`)
-              if (pr.mergeable == 'true') {
+              var mergeable = pr.mergeable;
+              while (mergeable != 'null') {
+                await new Promise(r => setTimeout(r, ${{ env.RETRY_INTERVAL }}));
+                const updatedPr = github.pulls.get({
+                  ...context.repo,
+                  pull_number: pr.number
+                });
+                mergeable = pr.data.mergeable;
+                console.log('html_url=${pr.html_url} mergeable=${pr.mergeable} mergeable_state=${pr.mergeable_state}`);
+              }
+              if (mergeable == 'true') {
                 await github.issues.addLabels({
                   ...context.repo,
                   issue_number: pr.number,
