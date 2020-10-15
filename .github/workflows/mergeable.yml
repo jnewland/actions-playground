@@ -22,7 +22,7 @@ jobs:
             if (prs.data.length === 0) {
               return;
             }
-            prs.data.forEach(function(pr) {
+            await Promise.all(prs.data.map(async (pr) => {
               if (pr.state != 'open') {
                 return;
               }
@@ -56,4 +56,4 @@ jobs:
                   }
                 }
               }
-            });
+            }));
