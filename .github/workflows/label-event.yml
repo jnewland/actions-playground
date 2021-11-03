@@ -1,12 +1,11 @@
-name: test
+name: label-event
 on:
   pull_request:
     types:
-      - opened
-      - synchronize
+      - labeled
 
 jobs:
-  test:
+  debug:
     runs-on: ubuntu-latest
     steps:
       - name: debug
