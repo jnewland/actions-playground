@@ -52,7 +52,7 @@ jobs:
           WORKFLOW_NAME: "${{ github.event.workflow.name }}"
           ISSUE_TITLE: "${{ github.event.workflow_run.name }} failed on ${{ github.event.workflow_run.head_branch }}"
           ISSUE_BODY: >
-            ${{ github.event.workflow_run.name }} failed on a ${{ github.event.workflow_run.name }} event on ${{ github.event.workflow_run.head_branch }} at ${{ github.event.workflow_run.created_at }}.
+            ${{ github.event.workflow_run.name }} failed on a ${{ github.event.event_name }} event on ${{ github.event.workflow_run.head_branch }} at ${{ github.event.workflow_run.created_at }}.
 
 
             * ${{ github.event.workflow_run.html_url }}
