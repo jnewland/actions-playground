@@ -1,5 +1,6 @@
 name: open issues on workflow failure
 on:
+  workflow_call:
   workflow_run:
     workflows:
       - mergeable
