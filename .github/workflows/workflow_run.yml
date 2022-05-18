@@ -1,0 +1,15 @@
+name: workflow_run context
+ on:
+   workflow_run:
+     workflows:
+       - mergeable
+     types: [completed]
+ jobs:
+   trace-workflow:
+     runs-on: ubuntu-latest
+     steps:
+       - name: Dump GitHub context
+         env:
+           GITHUB_CONTEXT: ${{ toJson(github.event) }}
+         run: |
+           echo "$GITHUB_CONTEXT"
