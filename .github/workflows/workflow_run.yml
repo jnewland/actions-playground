@@ -16,7 +16,7 @@ jobs:
       - name: close issue if scheduled or default branch run succeeded
         uses: actions/github-script@v6.1.0
         env:
-          WORKFLOW_NAME: "{{ github.event.workflow.name }}"
+          WORKFLOW_NAME: "${{ github.event.workflow.name }}"
         if: |
           github.event.workflow_run.conclusion == 'success' &&
           (
@@ -49,13 +49,13 @@ jobs:
             endsWith(github.ref, github.event.repository.default_branch)
           )
         env:
-          WORKFLOW_NAME: "{{ github.event.workflow.name }}"
-          ISSUE_TITLE: "{{ github.event.workflow_run.name }} failed on {{ github.event.workflow_run.head_branch }}"
+          WORKFLOW_NAME: "${{ github.event.workflow.name }}"
+          ISSUE_TITLE: "${{ github.event.workflow_run.name }} failed on ${{ github.event.workflow_run.head_branch }}"
           ISSUE_BODY: >
-            {{ github.event.workflow_run.name }} failed on a {{ github.event.workflow_run.name }} event on {{ github.event.workflow_run.head_branch }} at {{ github.event.workflow_run.created_at }}.
+            ${{ github.event.workflow_run.name }} failed on a ${{ github.event.workflow_run.name }} event on ${{ github.event.workflow_run.head_branch }} at ${{ github.event.workflow_run.created_at }}.
 
-            {{ github.event.workflow_run.html_url }}
-            {{ github.event.workflow.html_url }}
+            ${{ github.event.workflow_run.html_url }}
+            ${{ github.event.workflow.html_url }}
 
         with:
           script: |
