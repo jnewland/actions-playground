@@ -23,14 +23,14 @@ jobs:
           )
         with:
           script: |
-            github.issues.listForRepo({
+            github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: "open",
               labels: [github.event.workflow.name,'failure']
             }).then((issues) => {
               if (issues.data.length != 0) {
-                github.issues.update({
+                github.rest.issues.update({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issues.data[0].number,
@@ -56,14 +56,14 @@ jobs:
 
         with:
           script: |
-            github.issues.listForRepo({
+            github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: "open",
               labels: [github.event.workflow.name,'failure']
             }).then((issues) => {
               if (issues.data.length === 0) {
-                github.issues.create({
+                github.rest.issues.create({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   title: process.env.ISSUE_TITLE,
