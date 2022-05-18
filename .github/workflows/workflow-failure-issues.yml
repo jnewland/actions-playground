@@ -3,7 +3,7 @@ on:
   workflow_run:
     workflows:
     # Add more workflows here!
-      - renovate
+      - mergeable
     types:
       - completed
 jobs:
