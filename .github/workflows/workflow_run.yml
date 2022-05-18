@@ -15,6 +15,8 @@ jobs:
           echo "$GITHUB_CONTEXT"
       - name: close issue if scheduled or default branch run succeeded
         uses: actions/github-script@v6.1.0
+        env:
+          WORKFLOW_NAME: "{{ github.event.workflow.name }}"
         if: |
           github.event.workflow_run.conclusion == 'success' &&
           (
@@ -27,7 +29,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: "open",
-              labels: [github.event.workflow.name,'failure']
+              labels: [process.env.WORKFLOW_NAME,'failure']
             }).then((issues) => {
               if (issues.data.length != 0) {
                 github.rest.issues.update({
@@ -47,6 +49,7 @@ jobs:
             endsWith(github.ref, github.event.repository.default_branch)
           )
         env:
+          WORKFLOW_NAME: "{{ github.event.workflow.name }}"
           ISSUE_TITLE: "{{ github.event.workflow_run.name }} failed on {{ github.event.workflow_run.head_branch }}"
           ISSUE_BODY: >
             {{ github.event.workflow_run.name }} failed on a {{ github.event.workflow_run.name }} event on {{ github.event.workflow_run.head_branch }} at {{ github.event.workflow_run.created_at }}.
@@ -60,7 +63,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: "open",
-              labels: [github.event.workflow.name,'failure']
+              labels: [process.env.WORKFLOW_NAME,'failure']
             }).then((issues) => {
               if (issues.data.length === 0) {
                 github.rest.issues.create({
@@ -68,7 +71,7 @@ jobs:
                   repo: context.repo.repo,
                   title: process.env.ISSUE_TITLE,
                   body: process.env.ISSUE_BODY,
-                  labels: [github.event.workflow.name,'failure']
+                  labels: [process.env.WORKFLOW_NAME,'failure']
                 });
               }
             });
