@@ -1,11 +1,11 @@
-name: workflow_run context
+name: open issues on workflow failure
 on:
   workflow_run:
     workflows:
       - mergeable
     types: [completed]
 jobs:
-  trace-workflow:
+  debug:
     runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
@@ -13,6 +13,9 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
+  open-close-issues:
+    runs-on: ubuntu-latest
+    steps:
       - name: close issue if scheduled or default branch run succeeded
         uses: actions/github-script@v6.1.0
         env:
@@ -52,10 +55,11 @@ jobs:
           WORKFLOW_NAME: "${{ github.event.workflow.name }}"
           ISSUE_TITLE: "${{ github.event.workflow_run.name }} failed on ${{ github.event.workflow_run.head_branch }}"
           ISSUE_BODY: >
-            ${{ github.event.workflow_run.name }} failed on a ${{ github.event.event_name }} event on ${{ github.event.workflow_run.head_branch }} at ${{ github.event.workflow_run.created_at }}.
+            ${{ github.event.workflow_run.name }} failed on a ${{ github.event_name }} event on ${{ github.event.workflow_run.head_branch }} at ${{ github.event.workflow_run.created_at }}.
 
 
             * ${{ github.event.workflow_run.html_url }}
+
             * ${{ github.event.workflow.html_url }}
 
         with:
