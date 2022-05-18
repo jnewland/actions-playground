@@ -35,7 +35,8 @@ jobs:
       - name: dispatch-mergeable-check
         uses: actions/github-script@v3
         with:
-          github-token: ${{ secrets.MACHINE_USER_TOKEN }}
+          # TODO
+          # github-token: ${{ secrets.MACHINE_USER_TOKEN }}
           script: |
             await github.repos.createCommitStatus({
               ...context.repo,
