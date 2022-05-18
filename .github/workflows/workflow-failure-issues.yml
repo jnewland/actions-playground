@@ -8,4 +8,9 @@ on:
       - completed
 jobs:
   workflow-failure-issues:
-    uses: jnewland/.github/.github/workflows/workflow-failure-issues.yaml@main
+    uses: urcomputeringpal/.github/.github/workflows/workflow-failure-issues.yaml@main
+    if: |
+      (
+        github.event_name == 'schedule' ||
+        endsWith(github.ref, github.event.repository.default_branch)
+      )
