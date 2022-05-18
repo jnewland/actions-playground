@@ -1,0 +1,11 @@
+name: open issues on workflow failure, close on success
+on:
+  workflow_run:
+    workflows:
+    # Add more workflows here!
+      - renovate
+    types:
+      - completed
+jobs:
+  workflow-failure-issues:
+    uses: jnewland/.github/.github/workflows/workflow-failure-issues.yaml@main
