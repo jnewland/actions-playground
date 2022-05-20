@@ -1,0 +1,16 @@
+name: open issues on workflow failure, close on success
+on:
+  workflow_run:
+    workflows:
+    # Add more workflows here!
+      - mergeable
+    types:
+      - completed
+jobs:
+  workflow-failure-issues:
+    uses: urcomputeringpal/.github/.github/workflows/workflow-failure-issues.yaml@main
+    if: |
+      (
+        github.event_name == 'schedule' ||
+        endsWith(github.ref, github.event.repository.default_branch)
+      )
