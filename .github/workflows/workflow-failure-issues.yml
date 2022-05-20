@@ -3,10 +3,18 @@ on:
   workflow_run:
     workflows:
     # Add more workflows here!
-      - mergeable
+      - debug
     types:
       - completed
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
   workflow-failure-issues:
     uses: urcomputeringpal/.github/.github/workflows/workflow-failure-issues.yaml@main
     if: |
