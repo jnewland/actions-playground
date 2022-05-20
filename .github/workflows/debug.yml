@@ -1,0 +1,20 @@
+name: debug
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  
+  schedule:
+    - cron:  '*/15 * * * *'
+
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
