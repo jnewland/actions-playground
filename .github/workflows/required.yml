@@ -8,10 +8,6 @@ on:
     types:
       - completed
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   success:
     if: >-
@@ -35,7 +31,7 @@ jobs:
               state:       'pending',
               context:     'required',
               description: 'Some required builds have succeeded',
-              target_url:  'https://github.com/' + github.repository + '/commit/' +  workflow.data.head_sha ' + '/checks'
+              target_url:  'https://github.com/' + github.repository + '/commit/' +  workflow.data.head_sha + '/checks'
             });
 
   failure:
@@ -60,5 +56,5 @@ jobs:
               state:       'failure',
               context:     'required',
               description: 'Some required builds have failed',
-              target_url:  'https://github.com/' + github.repository + '/commit/' +  workflow.data.head_sha ' + '/checks'
+              target_url:  'https://github.com/' + github.repository + '/commit/' +  workflow.data.head_sha + '/checks'
             });
