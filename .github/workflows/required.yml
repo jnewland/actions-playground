@@ -17,6 +17,7 @@ jobs:
       - uses: actions/github-script@v6
         env:
           RUN_ID: ${{ github.event.workflow_run.id }}
+          STATUS_NAME: Required
         with:
           retries: 2
           script: |
@@ -45,7 +46,7 @@ jobs:
                   ...context.repo,
                   sha:         workflow.data.head_sha,
                   state:       'failure',
-                  context:     'required',
+                  context:     process.env.STATUS_NAME,
                   description: 'The ' + workflowRun.name + ' workflow reports ' + workflowRun.conclusion + '.',
                   target_url:  workflowRun.html_url
                 });
@@ -56,6 +57,17 @@ jobs:
               if (workflowRun.conclusion != 'success') {
                 return
               }
+
+              // report pending if we have at least one success
+              await github.rest.repos.createCommitStatus({
+                ...context.repo,
+                sha:         workflow.data.head_sha,
+                state:       'pending',
+                context:     process.env.STATUS_NAME,,
+                description: 'Some required builds are still pending.',
+                target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
+              });
+
             }
 
             // report success if we observed at least one required workflow with a conclusion of success
@@ -64,8 +76,8 @@ jobs:
                 ...context.repo,
                 sha:         workflow.data.head_sha,
                 state:       'success',
-                context:     'required',
-                description: 'All workflows have succeeded.',
+                context:     process.env.STATUS_NAME,,
+                description: 'All required workflows have succeeded.',
                 target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
               });
             }
