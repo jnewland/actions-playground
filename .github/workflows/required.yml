@@ -44,7 +44,7 @@ jobs:
                   sha:         workflow.data.head_sha,
                   state:       'failure',
                   context:     'required',
-                  description: workflowRun.name + has + workflowRun.conclusion + '.',
+                  description: workflowRun.name + ' reports ' + workflowRun.conclusion + '.',
                   target_url:  workflowRun.html_url
                 });
                 return;
