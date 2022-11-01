@@ -1,4 +1,4 @@
-name: required debug
+name: required pass
 on:
   pull_request:
     types:
@@ -9,11 +9,13 @@ on:
     - cron: "*/15 * * * *"
 
 jobs:
-  debug:
+  pass:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: sleep
         run: |
-          echo "$GITHUB_CONTEXT"
+          sleep 30
+          true
+      - name: pass
+        run: |
+          true
