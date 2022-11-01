@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows:
       - debug
+      - fail
     types:
       - completed
 
