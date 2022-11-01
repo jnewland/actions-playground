@@ -1,0 +1,61 @@
+name: Required
+
+on:
+  workflow_run:
+    workflows:
+      - debug
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  success:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    name: Send Status Embed to Discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+      - uses: actions/github-script@v6
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        with:
+          retries: 3
+          script: |
+            const workflow = await github.rest.actions.getWorkflowRun({
+              owner:  context.repo.owner,
+              repo:   context.repo.repo,
+              run_id: process.env.RUN_ID
+            });
+            console.log(workflow)
+
+  failure:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != 'success'
+    name: Send Status Embed to Discord
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+
+      # - uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       await github.rest.repos.createCommitStatus({
+      #         ...context.repo,
+      #         sha:         context.payload.pull_request.head.sha,
+      #         state:       'success',
+      #         context:     'deploy',
+      #         description: 'PR was deployed with GitHub Actions',
+      #         target_url:  'https://github.com/${{ github.repository }}/commit/${{ github.event.pull_request.head.sha }}/checks'
+      #       });
