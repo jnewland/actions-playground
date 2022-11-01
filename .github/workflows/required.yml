@@ -63,7 +63,7 @@ jobs:
                 ...context.repo,
                 sha:         workflow.data.head_sha,
                 state:       'pending',
-                context:     process.env.STATUS_NAME,,
+                context:     process.env.STATUS_NAME,
                 description: 'Some required builds are still pending.',
                 target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
               });
