@@ -1,0 +1,10 @@
+name: skipped
+on:
+  pull_request:
+
+jobs:
+  skipped:
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+    - run: echo yay
