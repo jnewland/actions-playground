@@ -1,0 +1,25 @@
+name: Run TypeScript Actions
+
+on:
+    pull_request:
+
+jobs:
+  run_scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup TypeScript scripts
+        uses: ./.github/ts-actions/setup-ts-scripts
+
+      - name: Run script1
+        id: script1
+        uses: ./.github/ts-actions/run-ts-script
+        with:
+          script_name: script1
+
+      - name: Use script1 result
+        run: |
+          echo "Script1 result: ${{ steps.script1.outputs.result }}"
+
