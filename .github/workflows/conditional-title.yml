@@ -10,6 +10,7 @@ jobs:
     self-document:
         name: ${{ contains(github.event.pull_request.labels.*.name, 'bug') && 'bug' || 'feature' }}
         runs-on: ubuntu-latest
+        if: env.GITHUB_ACTIONS == 'true'
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
