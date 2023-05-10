@@ -73,6 +73,10 @@ jobs:
                   echo "PREVIEW_ENV=pr-${PR_NUMBER}" >> $GITHUB_ENV
                   echo "PREVIEW_ENV_URL=https://pr-${PR_NUMBER}.example"  >> $GITHUB_ENV
 
+            - name: Checkout repository
+              uses: actions/checkout@v3
+    
+
             - name: Check if PR has the given label
               id: check_label
               env:
@@ -87,10 +91,6 @@ jobs:
                       break
                       fi
                   done
-
-            - name: Checkout repository
-              uses: actions/checkout@v3
-              if: steps.check_label.outputs.has_label == 'true'
 
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
               if: steps.check_label.outputs.has_label == 'true'
