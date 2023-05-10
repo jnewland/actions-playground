@@ -1,0 +1,19 @@
+name: "Setup TypeScript Scripts"
+description: "Build TypeScript scripts"
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+    - name: Install dependencies
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}/..
+        npm ci
+    - name: Build TypeScript scripts
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}/..
+        npx tsc

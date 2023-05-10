@@ -1,0 +1,15 @@
+name: "Run TypeScript Script"
+description: "Runs a TypeScript script by name and returns the result as a string"
+inputs:
+  script_name:
+    description: "Name of the TypeScript script to run (without .ts extension)"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run TypeScript script
+      shell: bash
+      id: run_ts_script
+      run: |
+        cd ${{ github.action_path }}/..
+        node out/${{ inputs.script_name }}.js

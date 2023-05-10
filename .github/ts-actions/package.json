@@ -1,0 +1,19 @@
+{
+    "name": "ts-actions",
+    "version": "1.0.0",
+    "description": "TypeScript actions for the GitHub workflow",
+    "private": true,
+    "scripts": {
+      "build": "tsc"
+    },
+    "dependencies": {
+      "@actions/core": "1.6.0",
+      "@actions/github": "5.0.0",
+      "@octokit/rest": "18.12.0"
+    },
+    "devDependencies": {
+      "typescript": "4.5.2",
+      "@types/node": "16.11.9"
+    }
+  }
+  
