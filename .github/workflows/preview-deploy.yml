@@ -82,6 +82,7 @@ jobs:
               env:
                   GH_TOKEN: ${{ github.token }}
               run: |
+                  set -x
                   pr_labels=$(gh pr view $PR_NUMBER --json labels -q '.labels[].name')
 
                   for label in $pr_labels; do
