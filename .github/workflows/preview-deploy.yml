@@ -77,24 +77,27 @@ jobs:
               uses: actions/checkout@v3
     
 
-            - name: Check if PR has the given label
-              id: check_label
+            - id: check_label
+              uses: actions/github-script@v6
               env:
-                  GH_TOKEN: ${{ github.token }}
-              run: |
-                  set -x
-                  pr_labels=$(gh pr view $PR_NUMBER --json labels -q '.labels[].name')
-
-                  for label in $pr_labels; do
-                      if [[ "$label" == "\"Preview\"" ]]; then
-                      echo "Found preview label!"
-                      echo "has_label=true" >> $GITHUB_OUTPUT
-                      break
-                      fi
-                  done
+                PR_NUMBER: ${{ env.PR_NUMBER }}
+              with:
+                result-encoding: string
+                script: |
+                  var label = await github.paginate(
+                    github.rest.issues.listLabelsOnIssue,
+                    {
+                      ...context.repo,
+                      issue_number: process.env.PR_NUMBER,
+                    },
+                    (response) => response.data.filter(
+                      (label) => label.name == 'Preview'
+                    )
+                  )
+                  if (label.length === 1) { return 'true' }
 
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
-              if: steps.check_label.outputs.has_label == 'true'
+              if: steps.check_label.outputs.result == 'true'
               name: Start preview deploy
               id: start
               with:
@@ -105,10 +108,10 @@ jobs:
                   env_url: ${{ env.PREVIEW_ENV_URL }}
 
             - run: true
-              if: steps.check_label.outputs.has_label == 'true'
+              if: steps.check_label.outputs.result == 'true'
 
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
-              if: always() && steps.check_label.outputs.has_label == 'true'
+              if: always() && steps.check_label.outputs.result == 'true'
               name: Finish preview deploy
               with:
                   step: finish
