@@ -9,7 +9,7 @@ runs:
   steps:
     - name: Run TypeScript script
       shell: bash
-      id: run_ts_script
       run: |
         cd ${{ github.action_path }}/..
+        cat out/${{ inputs.script_name }}.js
         node out/${{ inputs.script_name }}.js

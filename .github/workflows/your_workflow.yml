@@ -19,7 +19,4 @@ jobs:
         with:
           script_name: script1
 
-      - name: Use script1 result
-        run: |
-          echo "Script1 result: ${{ steps.script1.outputs.result }}"
 

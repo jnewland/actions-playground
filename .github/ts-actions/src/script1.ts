@@ -8,11 +8,11 @@ async function myFunction(
   core: typeof import("@actions/core")
 ): Promise<void> {
   // log debug output about the context
-    core.debug(`The event context: ${JSON.stringify(context, null, 2)}`);
+    core.info(`The event context: ${JSON.stringify(context, null, 2)}`);
     // log debug output about the octokit
-    core.debug(`The octokit context: ${JSON.stringify(octokit, null, 2)}`);
+    core.info(`The octokit context: ${JSON.stringify(octokit, null, 2)}`);
     // log debug output about the core
-    core.debug(`The core context: ${JSON.stringify(core, null, 2)}`);
+    core.info(`The core context: ${JSON.stringify(core, null, 2)}`);
 }
 
 // Example usage
