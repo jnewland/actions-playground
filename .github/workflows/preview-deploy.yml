@@ -1,0 +1,120 @@
+name: "PR Preview"
+
+on:
+    pull_request:
+        branches: [dev]
+        types:
+            - opened
+            - reopened
+            - labeled
+            - synchronize
+    workflow_dispatch:
+
+
+jobs:
+    self-document:
+        name: |
+            ${{ 
+                contains(github.event.pull_request.labels.*.name, 'Preview') && (
+                    contains(github.event.pull_request.labels.*.name, 'Preview redeploy') && 'Redeploying now 🔄' ||  'Deploying at end of pipeline ⏳ Add "Preview redeploy" label too if already ✅'
+                ) || 'Add "Preview" label to deploy 🚀'
+            }}
+        # Run this job when a PR is opened, reopened, labeled, or synchronized to explain how to deploy.
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Checkout repository
+              if: contains(github.event.pull_request.labels.*.name, 'Preview')
+              uses: actions/checkout@v3
+
+    deploy:
+        name: Deploy to preview environment
+        runs-on: ubuntu-latest
+        # Only run this job when triggered via a workflow_dispatch event or if the "Preview redeploy" label is added to a PR.
+        if: |
+            github.event_name == 'workflow_dispatch' || (
+                github.event_name == 'pull_request' && 
+                github.event.action == 'labeled' && 
+                github.event.label.name == 'Preview redeploy'
+            )
+        permissions:
+            id-token: write
+            deployments: write
+            actions: read
+            contents: read
+            pull-requests: read
+            issues: read
+        steps:
+            # In the case of a pull_request event, the PR number is available in
+            # the event payload, along with a head_ref member on the GitHub
+            # context. In the case of a workflow_dispatch event, a ref_name
+            # member is available, but not a PR number. If we don't have a PR
+            # number, look it up based on the ref_name. In all cases, assign the
+            # PR number to the PR_NUMBER environment variable and the correct
+            # ref to the REF environment variable for subsequent use.
+            - name: Configure environment
+              env:
+                  PR_NUMBER: ${{ github.event.pull_request.number }}
+                  REF: ${{ github.head_ref || github.ref_name }}
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  if [ -z "$PR_NUMBER" ]; then
+                      PR_NUMBER=$(gh pr list --search "head:${REF}" --json number --jq '.[0].number')
+                      if [ -z "$PR_NUMBER" ]; then
+                          echo "Could not find PR for ${REF}"
+                          exit 1
+                      fi
+                  fi
+                  echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+                  echo "REF=$REF" >> $GITHUB_ENV
+
+                  # Set the preview environment name and URL too
+                  echo "PREVIEW_ENV=pr-${PR_NUMBER}" >> $GITHUB_ENV
+                  echo "PREVIEW_ENV_URL=https://pr-${PR_NUMBER}.example"  >> $GITHUB_ENV
+
+            - name: Check if PR has the given label
+              id: check_label
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  pr_labels=$(gh pr view $PR_NUMBER --json labels -q '.labels[].name')
+
+                  for label in $pr_labels; do
+                      if [[ "$label" == "\"Preview\"" ]]; then
+                      echo "Found preview label!"
+                      echo "has_label=true" >> $GITHUB_OUTPUT
+                      break
+                      fi
+                  done
+
+            - name: Checkout repository
+              uses: actions/checkout@v3
+              if: steps.check_label.outputs.has_label == 'true'
+
+            - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
+              if: steps.check_label.outputs.has_label == 'true'
+              name: Start preview deploy
+              id: start
+              with:
+                  step: start
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  head_ref: ${{ env.REF }}
+                  env: ${{ env.PREVIEW_ENV }}
+                  env_url: ${{ env.PREVIEW_ENV_URL }}
+
+            - run: true
+              if: steps.check_label.outputs.has_label == 'true'
+
+            - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
+              if: always() && steps.check_label.outputs.has_label == 'true'
+              name: Finish preview deploy
+              with:
+                  step: finish
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.start.outputs.deployment_id }}
+                  head_ref: ${{ env.REF }}
+                  env: ${{ env.PREVIEW_ENV }}
+                  env_url: ${{ env.PREVIEW_ENV_URL }}
+                  status: ${{ job.status }}
