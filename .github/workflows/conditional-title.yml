@@ -1,9 +1,14 @@
 on:
     pull_request:
+      types:
+        - opened
+        - reopened
+        - labeled
+        - syncronize
 
 jobs:
     self-document:
-        name: ${{ contains(github.event.pull_request.labels.*.name, 'Bug') && 'Bug' || 'Feature' }}
+        name: ${{ contains(github.event.pull_request.labels.*.name, 'bug') && 'bug' || 'feature' }}
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
