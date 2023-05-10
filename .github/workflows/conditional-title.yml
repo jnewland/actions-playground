@@ -1,0 +1,10 @@
+on:
+    pull_request:
+
+jobs:
+    self-document:
+        name: ${{ contains(github.event.pull_request.labels.*.name, 'Bug') && 'Bug' || 'Feature' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
