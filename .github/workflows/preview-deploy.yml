@@ -15,7 +15,7 @@ jobs:
         name: |
             ${{ 
                 contains(github.event.pull_request.labels.*.name, 'Preview') && (
-                    contains(github.event.pull_request.labels.*.name, 'Preview redeploy') && 'Redeploying now 🔄' ||  'Deploying at end of pipeline ⏳ Add "Preview redeploy" label too if already ✅'
+                    (github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'Preview redeploy')) && 'Redeploying now 🔄 Unlabel and re-label to retry' ||  'Deploying at end of pipeline ⏳ Add "Preview redeploy" label too if already ✅'
                 ) || 'Add "Preview" label to deploy 🚀'
             }}
         # Run this job when a PR is opened, reopened, labeled, or synchronized to explain how to deploy.
