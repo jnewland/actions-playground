@@ -48,10 +48,10 @@ runs:
         script: |
           const functionName = process.env['FUNCTION_NAME'];
           const bundlePath = process.env['BUNDLE_PATH'];
-          core.info(`Running ${$functionName} from ${$bundlePath}`);
-          const scriptModule = require($bundlePath);
-          const func = scriptModule[$functionName];
+          core.info(`Running ${functionName} from ${bundlePath}`);
+          const scriptModule = require(bundlePath);
+          const func = scriptModule[functionName];
           if (typeof func !== 'function') {
-            throw new Error(`Function "${$functionName}" not found in ${bundlePath}.`);
+            throw new Error(`Function "${functionName}" not found in ${bundlePath}.`);
           }
           await func(github, context, core);
