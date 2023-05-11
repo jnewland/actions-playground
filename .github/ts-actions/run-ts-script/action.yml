@@ -51,6 +51,7 @@ runs:
           core.info(`Running ${functionName} from ${bundlePath}`);
           const scriptModule = require(bundlePath);
           const func = scriptModule[functionName];
+          core.info(scriptModule);
           const type = typeof func;
           core.info(`Found function of type ${type}`);
           if (typeof func !== 'function') {
