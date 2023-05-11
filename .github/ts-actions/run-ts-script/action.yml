@@ -51,10 +51,11 @@ runs:
           core.info(`Running ${functionName} from ${bundlePath}`);
           const scriptModule = require(bundlePath);
           const func = scriptModule[functionName];
-          core.info(scriptModule);
           const type = typeof func;
           core.info(`Found function of type ${type}`);
           if (typeof func !== 'function') {
+            core.info(Object.keys(scriptModule));
+            core.info(Object.getOwnPropertyNames(scriptModule));
             throw new Error(`Function "${functionName}" not found in ${bundlePath}.`);
           }
           await func(github, context, core);
