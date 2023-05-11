@@ -6,7 +6,7 @@ inputs:
     default: ""
   bundle-path:
     description: 'Path to the bundle file'
-    default: "./.github/ts-actions/out/out.js"
+    default: ".github/ts-actions/out/out.js"
   github-token:
     description: The GitHub token used to create an authenticated client
     default: ${{ github.token }}
@@ -49,8 +49,8 @@ runs:
           const path = __original_require__('path');
           const functionName = process.env['FUNCTION_NAME'];
           const bundlePath = process.env['BUNDLE_PATH'];
-          core.info(`Loading ${functionName} from ${bundlePath}`);
           const scriptPath = path.resolve(process.cwd(), bundlePath);
+          core.info(`Loading ${functionName} from ${scriptPath}`);
           const scriptModule = await import(scriptPath);
           core.info('scriptModule:', scriptModule);
           const func = scriptModule[functionName];
