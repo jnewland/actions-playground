@@ -31,4 +31,4 @@ runs:
           shell: bash
           run: |
               cd ${{ inputs.path }}
-              npx tsc
+              npm run build
