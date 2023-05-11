@@ -12,6 +12,8 @@ jobs:
 
       - name: Setup TypeScript scripts
         uses: ./.github/ts-actions/setup-ts-scripts
+        with:
+          path: ./.github/ts-actions
 
       - name: Run prNumber
         id: prNumber

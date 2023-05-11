@@ -1,5 +1,9 @@
 name: "Setup TypeScript Scripts"
 description: "Build TypeScript scripts"
+inputs:
+  path:
+    description: 'Path to the scripts'
+    required: true
 runs:
     using: "composite"
     steps:
@@ -15,16 +19,16 @@ runs:
           with:
               node-version: ${{ env.node_version }}
               cache: npm
-              cache-dependency-path: ${{ github.action_path }}/../package-lock.json
+              cache-dependency-path: ${{ inputs.path }}/package-lock.json
 
         - name: Install dependencies
           shell: bash
           run: |
-              cd ${{ github.action_path }}/..
+              cd ${{ inputs.path }}
               npm ci
 
         - name: Build TypeScript scripts
           shell: bash
           run: |
-              cd ${{ github.action_path }}/..
+              cd ${{ inputs.path }}
               npx tsc
