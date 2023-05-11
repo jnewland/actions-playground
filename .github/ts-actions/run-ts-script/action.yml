@@ -48,7 +48,7 @@ runs:
         script: |
           const functionName = process.env['FUNCTION_NAME'];
           const bundlePath = process.env['BUNDLE_PATH'];
-          const scriptModule = await import(bundlePath);
+          const scriptModule = await import(`${{ github.workspace }}/${bundlePath}`);
           core.info('scriptModule:', scriptModule);
           const func = scriptModule[functionName];
           core.info('func:', func);
