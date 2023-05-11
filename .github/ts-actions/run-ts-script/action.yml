@@ -51,7 +51,7 @@ runs:
           const bundlePath = process.env['BUNDLE_PATH'];
           core.info(`Loading ${functionName} from ${bundlePath}`);
           const scriptPath = path.resolve(process.cwd(), bundlePath);
-          const scriptModule = __original_require__(scriptPath);
+          const scriptModule = await import(scriptPath);
           core.info('scriptModule:', scriptModule);
           const func = scriptModule[functionName];
           core.info('func:', func);
