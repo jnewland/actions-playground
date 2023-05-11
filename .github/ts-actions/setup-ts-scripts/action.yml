@@ -32,3 +32,4 @@ runs:
           run: |
               cd ${{ inputs.path }}
               npm run build
+              find .
