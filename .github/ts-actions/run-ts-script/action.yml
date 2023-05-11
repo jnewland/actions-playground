@@ -6,7 +6,7 @@ inputs:
     default: ""
   bundle-path:
     description: 'Path to the bundle file'
-    default: ".github/ts-actions/out/out.js"
+    default: "./.github/ts-actions/out/out.js"
   github-token:
     description: The GitHub token used to create an authenticated client
     default: ${{ github.token }}
