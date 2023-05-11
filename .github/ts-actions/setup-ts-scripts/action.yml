@@ -1,19 +1,29 @@
 name: "Setup TypeScript Scripts"
 description: "Build TypeScript scripts"
 runs:
-  using: "composite"
-  steps:
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
-    - name: Install dependencies
-      shell: bash
-      run: |
-        cd ${{ github.action_path }}/..
-        npm ci
-    - name: Build TypeScript scripts
-      shell: bash
-      run: |
-        cd ${{ github.action_path }}/..
-        npx tsc
+    using: "composite"
+    steps:
+        - name: Setup environment
+          shell: bash
+          run: |
+              NODE_VERSION=$(cat .nvmrc | xargs)
+              echo "node_version=$NODE_VERSION" >> $GITHUB_ENV
+
+        - name: Setup node
+          uses: actions/setup-node@v3
+          with:
+              node-version: ${{ env.node_version }}
+              cache: npm
+              cache-dependency-path: ${{ github.action_path }}/../package-lock.json
+
+        - name: Install dependencies
+          shell: bash
+          run: |
+              cd ${{ github.action_path }}/..
+              npm ci
+
+        - name: Build TypeScript scripts
+          shell: bash
+          run: |
+              cd ${{ github.action_path }}/..
+              npx tsc

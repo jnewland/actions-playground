@@ -1,0 +1,25 @@
+# GitHub Actions Supporting Scripts
+
+See https://github.com/actions/github-script/ for more information. Set
+
+## Usage
+
+```yaml
+- name: Checkout repository
+  uses: actions/checkout@v3
+
+- name: Setup TypeScript scripts
+  uses: ./.github/ts-actions/setup-ts-scripts
+
+- name: Run script1
+  # script1.ts can use core.setOutput('result', 'some value') to set a named output
+  # it can also set environment variables with core.exportVariable('result', 'some value')
+  id: script1
+  uses: ./.github/ts-actions/run-ts-script
+  with:
+      script_name: script1
+
+- name: Use script1 result
+  run: |
+      echo "Script1 result: ${{ steps.script1.outputs.result }}"
+```

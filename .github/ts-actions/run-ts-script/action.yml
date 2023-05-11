@@ -1,15 +1,25 @@
-name: "Run TypeScript Script"
-description: "Runs a TypeScript script by name and returns the result as a string"
+name: 'Run TypeScript Script'
+description: 'Runs a TypeScript script using actions/github-script'
 inputs:
-  script_name:
-    description: "Name of the TypeScript script to run (without .ts extension)"
-    required: true
+  function-name:
+    description: 'Name of the function to call'
+    default: ""
+  bundle:
+    description: 'Path to the bundle file'
+    default: "../out/out.js"
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: Run TypeScript script
-      shell: bash
-      run: |
-        cd ${{ github.action_path }}/..
-        cat out/${{ inputs.script_name }}.js
-        node out/${{ inputs.script_name }}.js
+    - name: 'Execute script'
+      uses: 'actions/github-script@v6'
+      with:
+        script: |
+          const path = __original_require__('path');
+          const { $INPUT_FUNCTION_NAME, $INPUT_BUNDLE } = process.env;
+          const scriptPath = path.resolve(process.cwd(), $INPUT_BUNDLE);
+          const scriptModule = __original_require__(scriptPath);
+          const func = scriptModule[$INPUT_FUNCTION_NAME];
+          if (typeof func !== 'function') {
+            throw new Error(`Function "${$INPUT_FUNCTION_NAME}" not found in ${INPUT_BUNDLE}.`);
+          }
+          await func(github, context, core);

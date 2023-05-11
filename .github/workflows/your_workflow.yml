@@ -13,10 +13,10 @@ jobs:
       - name: Setup TypeScript scripts
         uses: ./.github/ts-actions/setup-ts-scripts
 
-      - name: Run script1
-        id: script1
+      - name: Run prNumber
+        id: prNumber
         uses: ./.github/ts-actions/run-ts-script
         with:
-          script_name: script1
+          script_name: prNumber
 
 
