@@ -59,3 +59,4 @@ runs:
             throw new Error(`Function "${functionName}" not found in ${bundlePath}.`);
           }
           await func(github, context, core);
+
