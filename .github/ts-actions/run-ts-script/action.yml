@@ -52,7 +52,9 @@ runs:
           core.info(`Loading ${functionName} from ${bundlePath}`);
           const scriptPath = path.resolve(process.cwd(), bundlePath);
           const scriptModule = __original_require__(scriptPath);
+          core.info('scriptModule:', scriptModule);
           const func = scriptModule[functionName];
+          core.info('func:', func);
           const type = typeof func;
           core.info(`Found function of type ${type}`);
           if (typeof func !== 'function') {
