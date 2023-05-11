@@ -46,10 +46,12 @@ runs:
         previews: ${{ inputs.previews }}
         retry-exempt-status-codes: ${{ inputs.retry-exempt-status-codes }}
         script: |
+          const path = __original_require__('path');
           const functionName = process.env['FUNCTION_NAME'];
           const bundlePath = process.env['BUNDLE_PATH'];
-          core.info(`Running ${functionName} from ${bundlePath}`);
-          const scriptModule = require(bundlePath);
+          core.info(`Loading ${functionName} from ${bundlePath}`);
+          const scriptPath = path.resolve(process.cwd(), bundlePath);
+          const scriptModule = __original_require__(scriptPath);
           const func = scriptModule[functionName];
           const type = typeof func;
           core.info(`Found function of type ${type}`);
