@@ -6,7 +6,7 @@ inputs:
     default: ""
   bundle:
     description: 'Path to the bundle file'
-    default: "../out/out.js"
+    default: ".github/ts-actions/out/out.js"
 runs:
   using: 'composite'
   steps:
