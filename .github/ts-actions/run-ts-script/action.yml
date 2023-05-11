@@ -4,7 +4,7 @@ inputs:
   function-name:
     description: 'Name of the function to call'
     default: ""
-  bundle:
+  bundle-path:
     description: 'Path to the bundle file'
     default: "./.github/ts-actions/out/out.js"
 runs:
@@ -14,10 +14,11 @@ runs:
       uses: 'actions/github-script@v6'
       with:
         script: |
-          const { $INPUT_FUNCTION_NAME, $INPUT_BUNDLE } = process.env;
-          const scriptModule = require($INPUT_BUNDLE);
+          const { $INPUT_FUNCTION_NAME, $INPUT_BUNDLE_PATH } = process.env;
+          core.info(`Running ${$INPUT_FUNCTION_NAME} from ${$INPUT_BUNDLE_PATH}`);
+          const scriptModule = require($INPUT_BUNDLE_PATH);
           const func = scriptModule[$INPUT_FUNCTION_NAME];
           if (typeof func !== 'function') {
-            throw new Error(`Function "${$INPUT_FUNCTION_NAME}" not found in ${INPUT_BUNDLE}.`);
+            throw new Error(`Function "${$INPUT_FUNCTION_NAME}" not found in ${INPUT_BUNDLE_PATH}.`);
           }
           await func(github, context, core);
