@@ -16,13 +16,4 @@ runs:
         script: |
           const pathModule = __original_require__('path');
           const { $INPUT_FUNCTION_NAME, $INPUT_BUNDLE } = process.env;
-          const scriptPath = pathModule.resolve(process.cwd(), $INPUT_BUNDLE);
-          console.log(`Loading from ${scriptPath}`);
-          const scriptModule = __original_require__(scriptPath);
-          console.log(`Loaded ${scriptModule}`);
-          console.log(`Running ${$INPUT_FUNCTION_NAME}`);
-          const func = scriptModule[$INPUT_FUNCTION_NAME];
-          if (typeof func !== 'function') {
-            throw new Error(`Function "${$INPUT_FUNCTION_NAME}" not found in ${INPUT_BUNDLE}.`);
-          }
-          await func(github, context, core);
+          console.log(`Running ${$INPUT_FUNCTION_NAME} from ${$INPUT_BUNDLE}`);
