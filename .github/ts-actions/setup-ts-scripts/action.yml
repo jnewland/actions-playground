@@ -6,6 +6,7 @@ runs:
         - name: Setup environment
           shell: bash
           run: |
+              test -f .nvmrc || exit 0
               NODE_VERSION=$(cat .nvmrc | xargs)
               echo "node_version=$NODE_VERSION" >> $GITHUB_ENV
 
