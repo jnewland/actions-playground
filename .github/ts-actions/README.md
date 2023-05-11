@@ -19,7 +19,7 @@ See https://github.com/actions/github-script/ for more information. Set
   id: script1
   uses: ./.github/ts-actions/run-ts-script
   with:
-      script_name: script1
+      function-name: script1
 
 - name: Use script1 result
   run: |

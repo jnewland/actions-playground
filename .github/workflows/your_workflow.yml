@@ -19,6 +19,6 @@ jobs:
         id: prNumber
         uses: ./.github/ts-actions/run-ts-script
         with:
-          script_name: prNumber
+          function-name: prNumber
 
 
