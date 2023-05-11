@@ -14,11 +14,12 @@ runs:
       uses: 'actions/github-script@v6'
       with:
         script: |
-          const { $INPUT_FUNCTION_NAME, $INPUT_BUNDLE_PATH } = process.env;
-          core.info(`Running ${$INPUT_FUNCTION_NAME} from ${$INPUT_BUNDLE_PATH}`);
-          const scriptModule = require($INPUT_BUNDLE_PATH);
-          const func = scriptModule[$INPUT_FUNCTION_NAME];
+          const functionName = core.getInput('function-name', { required: true });
+          const bundlePath = core.getInput('bundle-path', { required: true });
+          core.info(`Running ${$functionName} from ${$bundlePath}`);
+          const scriptModule = require($bundlePath);
+          const func = scriptModule[$functionName];
           if (typeof func !== 'function') {
-            throw new Error(`Function "${$INPUT_FUNCTION_NAME}" not found in ${INPUT_BUNDLE_PATH}.`);
+            throw new Error(`Function "${$functionName}" not found in ${bundlePath}.`);
           }
           await func(github, context, core);
