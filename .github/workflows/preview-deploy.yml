@@ -79,7 +79,7 @@ jobs:
                   echo "PREVIEW_ENV_URL=https://pr-${PR_NUMBER}.example"  >> $GITHUB_ENV
 
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
-              if: steps.check_label.outputs.result == 'true'
+              if: steps.check_label.outputs.result == 'Preview'
               name: Start preview deploy
               id: start
               with:
@@ -90,10 +90,10 @@ jobs:
                   env_url: ${{ env.PREVIEW_ENV_URL }}
 
             - run: true
-              if: steps.check_label.outputs.result == 'true'
+              if: steps.check_label.outputs.result == 'Preview'
 
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
-              if: always() && steps.check_label.outputs.result == 'true'
+              if: always() && steps.check_label.outputs.result == 'Preview'
               name: Finish preview deploy
               with:
                   step: finish

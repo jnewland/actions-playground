@@ -26,6 +26,6 @@ export async function getLabel(args: GitHubScriptArguments): Promise<String> {
         return "";
     } else {
         console.log(`Found matching label`);
-        return `${labels[0].name}`;
+        return labels[0].name;
     }
 }
