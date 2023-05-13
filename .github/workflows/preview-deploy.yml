@@ -60,24 +60,15 @@ jobs:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: prNumber
 
-            - id: check_label
-              uses: actions/github-script@v6
+            - name: Get label
+              id: check_label
+              uses: ./.github/workflows/run-ts-script
               env:
                   PR_NUMBER: ${{ steps.prNumber.outputs.result }}
+                  LABEL: Preview
               with:
-                  result-encoding: string
-                  script: |
-                      var label = await github.paginate(
-                        github.rest.issues.listLabelsOnIssue,
-                        {
-                          ...context.repo,
-                          issue_number: process.env.PR_NUMBER,
-                        },
-                        (response) => response.data.filter(
-                          (label) => label.name == 'Preview'
-                        )
-                      )
-                      if (label.length === 1) { return 'true' }
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: getLabel
 
             - name: Configure env
               env:
