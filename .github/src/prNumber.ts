@@ -11,7 +11,7 @@ export async function prNumber(args: GitHubScriptArguments): Promise<String> {
         return `${context.payload.pull_request.number}`;
     }
 
-    if (github === undefined || context === undefined || core === undefined) {
+    if (github === undefined) {
         throw new Error("Need github");
     }
 
