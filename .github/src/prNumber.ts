@@ -1,14 +1,19 @@
 import { GitHubScriptArguments } from "./types";
 
-export async function prNumber(args: GitHubScriptArguments): Promise<void> {
+export async function prNumber(args: GitHubScriptArguments): Promise<String> {
     const { github, context, core } = args;
-    if (github === undefined || context === undefined || core === undefined) {
-        throw new Error("Missing required arguments");
+    if (context === undefined || core === undefined) {
+        throw new Error("Need core and context to run this script");
     }
+
     if (context.payload.pull_request !== undefined) {
         console.log(`PR number: ${context.payload.pull_request.number}`);
         core.exportVariable("PR_NUMBER", `${context.payload.pull_request.number}`);
-        return;
+        return `${context.payload.pull_request.number}`;
+    }
+
+    if (github === undefined || context === undefined || core === undefined) {
+        throw new Error("Need github");
     }
 
     const branchName = context.ref.replace("refs/heads/", "");
@@ -27,4 +32,5 @@ export async function prNumber(args: GitHubScriptArguments): Promise<void> {
     const pr = prs.data[0];
     console.log(`Found PR number: ${pr.number}`);
     core.exportVariable("PR_NUMBER", `${pr.number}`);
+    return `${pr.number}`;
 }

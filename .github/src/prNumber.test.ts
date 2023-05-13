@@ -5,7 +5,7 @@ import { Context } from "@actions/github/lib/context";
 import * as core from "./__mocks__/core";
 
 describe("prNumber", () => {
-    it("should set the prNumber from the context", () => {
+    it("should set the prNumber from the context", async () => {
         core.exportVariable.mockClear();
 
         const context: Context = {
@@ -43,8 +43,9 @@ describe("prNumber", () => {
             core: core,
         };
 
-        prNumber(args);
+        const stringNumber = await prNumber(args);
 
         expect(core.exportVariable).toHaveBeenCalledWith("PR_NUMBER", "1234");
+        expect(stringNumber).toEqual("1234");
     });
 });

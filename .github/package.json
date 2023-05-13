@@ -4,8 +4,8 @@
     "description": "TypeScript actions for the GitHub workflow",
     "private": true,
     "scripts": {
-        "format": "prettier --write .",
-        "format:check": "prettier --check .",
+        "format": "prettier --write src",
+        "format:check": "prettier --check src",
         "build": "tsc",
         "test": "jest"
     },

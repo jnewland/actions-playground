@@ -30,13 +30,14 @@ runs:
         - uses: actions/cache@v3
           id: npm-cache
           with:
-              path: ${{ steps.npm-cache-dir.outputs.dir }}
-              key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+              path: |
+                  ${{ steps.npm-cache-dir.outputs.dir }}
+              key: |
+                  setup-ts-scripts-${{ runner.os }}-npm-${{ hashFiles(format('{0}/{1}', inputs.path, 'package-lock.json')) }}
               restore-keys: |
-                  ${{ runner.os }}-node-
+                  setup-ts-scripts-${{ runner.os }}-npm-
 
         - name: Install dependencies
-          if: steps.cache.outputs.npm-cache != 'true'
           shell: bash
           run: |
               cd ${{ inputs.path }}
@@ -45,12 +46,28 @@ runs:
         - uses: actions/cache@v3
           id: build-cache
           with:
-              path: ${{ inputs.path }}/out
-              key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+              path: |
+                  ${{ inputs.path }}/dist
+              key: |
+                  setup-ts-scripts-${{ runner.os }}-build-${{ hashFiles(format('{0}/{1}', inputs.path, 'src/*.ts')) }}
 
-        - name: Build TypeScript scripts
-          if: steps.cache.outputs.build-cache != 'true'
+        - name: Lint
+          if: steps.build-cache.outputs.cache-hit != 'true'
           shell: bash
+          working-directory: ${{ inputs.path }}
           run: |
-              cd ${{ inputs.path }}
+              npm run format:check
+
+        - name: Test
+          if: steps.build-cache.outputs.cache-hit != 'true'
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: |
+              npm run test
+
+        - name: Build
+          if: steps.build-cache.outputs.cache-hit != 'true'
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: |
               npm run build
