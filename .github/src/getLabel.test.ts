@@ -9,11 +9,9 @@ jest.mock("@octokit/rest", () => {
         rest = {
             issues: {
                 listLabelsOnIssue: jest.fn().mockReturnValue({
-                    data: [
-                        { name: "Test" }
-                    ]
+                    data: [{ name: "Test" }],
                 }),
-            }
+            },
         };
     };
 

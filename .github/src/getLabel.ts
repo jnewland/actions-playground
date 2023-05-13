@@ -17,14 +17,12 @@ export async function getLabel(args: GitHubScriptArguments): Promise<String> {
     const response = await github.rest.issues.listLabelsOnIssue({
         ...context.repo,
         issue_number: parseInt(process.env.PR_NUMBER),
-    })
-    const labels = response.data.filter(
-        (label) => label.name.toLowerCase() == process.env.LABEL!.toLowerCase()
-    );
+    });
+    const labels = response.data.filter(label => label.name.toLowerCase() == process.env.LABEL!.toLowerCase());
 
     if (labels.length == 0) {
         console.log(`No matching label`);
-        return '';
+        return "";
     } else {
         console.log(`Found matching label`);
         return `${labels[0].name}`;
