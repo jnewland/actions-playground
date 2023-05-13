@@ -45,20 +45,10 @@ jobs:
             pull-requests: read
             issues: read
         steps:
-            # Denormalize ref
-            # Setup
-            - name: Configure environment
-              env:
-                  REF: ${{ github.head_ref || github.ref_name }}
-              run: |
-                  echo "REF=$REF" >> $GITHUB_ENV
-
-                  # Set the preview environment name and URL too
-                  echo "PREVIEW_ENV=pr-${PR_NUMBER}" >> $GITHUB_ENV
-                  echo "PREVIEW_ENV_URL=https://pr-${PR_NUMBER}.example"  >> $GITHUB_ENV
-
             - name: Checkout repository
               uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
             - name: Setup TypeScript scripts
               uses: ./.github/workflows/setup-ts-scripts
@@ -73,7 +63,7 @@ jobs:
             - id: check_label
               uses: actions/github-script@v6
               env:
-                  PR_NUMBER: ${{ env.PR_NUMBER }}
+                  PR_NUMBER: ${{ steps.prNumber.outputs.result }}
               with:
                   result-encoding: string
                   script: |
@@ -89,6 +79,14 @@ jobs:
                       )
                       if (label.length === 1) { return 'true' }
 
+            - name: Configure env
+              env:
+                  PR_NUMBER: ${{ steps.prNumber.outputs.result }}
+              run: |
+                  # Set the preview environment name and URL too
+                  echo "PREVIEW_ENV=pr-${PR_NUMBER}" >> $GITHUB_ENV
+                  echo "PREVIEW_ENV_URL=https://pr-${PR_NUMBER}.example"  >> $GITHUB_ENV
+
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
               if: steps.check_label.outputs.result == 'true'
               name: Start preview deploy
@@ -96,7 +94,7 @@ jobs:
               with:
                   step: start
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  head_ref: ${{ env.REF }}
+                  head_ref: ${{ github.head_ref || github.ref_name }}
                   env: ${{ env.PREVIEW_ENV }}
                   env_url: ${{ env.PREVIEW_ENV_URL }}
 
@@ -110,7 +108,7 @@ jobs:
                   step: finish
                   token: ${{ secrets.GITHUB_TOKEN }}
                   deployment_id: ${{ steps.start.outputs.deployment_id }}
-                  head_ref: ${{ env.REF }}
+                  head_ref: ${{ github.head_ref || github.ref_name }}
                   env: ${{ env.PREVIEW_ENV }}
                   env_url: ${{ env.PREVIEW_ENV_URL }}
                   status: ${{ job.status }}

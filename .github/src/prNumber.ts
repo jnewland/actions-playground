@@ -8,7 +8,6 @@ export async function prNumber(args: GitHubScriptArguments): Promise<String> {
 
     if (context.payload.pull_request !== undefined) {
         console.log(`PR number: ${context.payload.pull_request.number}`);
-        core.exportVariable("PR_NUMBER", `${context.payload.pull_request.number}`);
         return `${context.payload.pull_request.number}`;
     }
 
@@ -31,6 +30,5 @@ export async function prNumber(args: GitHubScriptArguments): Promise<String> {
 
     const pr = prs.data[0];
     console.log(`Found PR number: ${pr.number}`);
-    core.exportVariable("PR_NUMBER", `${pr.number}`);
     return `${pr.number}`;
 }
