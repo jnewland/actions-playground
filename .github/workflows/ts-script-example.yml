@@ -29,3 +29,13 @@ jobs:
             - name: Validate result
               run: |
                   echo "PR number is ${{ steps.prNumber.outputs.result }}"
+
+            - name: Get label
+              id: getLabel
+              uses: ./.github/workflows/run-ts-script
+              env:
+                  PR_NUMBER: ${{ steps.prNumber.outputs.result }}
+                  LABEL: "test"
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: getLabel

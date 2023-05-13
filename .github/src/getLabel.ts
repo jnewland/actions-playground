@@ -9,6 +9,7 @@ export async function getLabel(args: GitHubScriptArguments): Promise<String> {
     if (process.env.PR_NUMBER === undefined || process.env.PR_NUMBER === "") {
         throw new Error("Need PR_NUMBER env variable");
     }
+    console.log(`PR number: ${process.env.PR_NUMBER}`);
 
     if (process.env.LABEL === undefined) {
         throw new Error("Need LABEL env variable");
