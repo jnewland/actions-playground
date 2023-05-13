@@ -1,0 +1,105 @@
+name: "PR Preview"
+
+on:
+    pull_request:
+        types:
+            - opened
+            - reopened
+            - labeled
+            - synchronize
+    workflow_dispatch:
+
+jobs:
+    self-document:
+        name: |
+            ${{ 
+                contains(github.event.pull_request.labels.*.name, 'Preview') && (
+                    (github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'Preview redeploy')) && 'Redeploying now 🔄 Unlabel and re-label to retry' ||  'Deploying at end of pipeline ⏳ Add "Preview redeploy" label too if already ✅'
+                ) || 'Add "Preview" label to deploy 🚀'
+            }}
+        # Run this job when a PR is opened, reopened, labeled, or synchronized to explain how to deploy.
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Checkout repository
+              if: contains(github.event.pull_request.labels.*.name, 'Preview')
+              uses: actions/checkout@v3
+
+    deploy:
+        name: Deploy to preview environment
+        runs-on: ubuntu-latest
+        # Only run this job when triggered via a workflow_dispatch event or if the "Preview redeploy" label is added to a PR.
+        if: |
+            github.event_name == 'workflow_dispatch' || (
+                github.event_name == 'pull_request' && 
+                github.event.action == 'labeled' && 
+                github.event.label.name == 'Preview redeploy'
+            )
+        permissions:
+            id-token: write
+            deployments: write
+            actions: read
+            contents: read
+            pull-requests: read
+            issues: read
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+            - name: Setup TypeScript scripts
+              uses: ./.github/workflows/setup-ts-scripts
+
+            - name: Set PR_NUMBER
+              id: prNumber
+              uses: ./.github/workflows/run-ts-script
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: prNumber
+
+            - name: Get label
+              id: check_label
+              uses: ./.github/workflows/run-ts-script
+              env:
+                  PR_NUMBER: ${{ steps.prNumber.outputs.result }}
+                  LABEL: Preview
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: getLabel
+
+            - name: Configure env
+              env:
+                  PR_NUMBER: ${{ steps.prNumber.outputs.result }}
+              run: |
+                  # Set the preview environment name and URL too
+                  echo "PREVIEW_ENV=pr-${PR_NUMBER}" >> $GITHUB_ENV
+                  echo "PREVIEW_ENV_URL=https://pr-${PR_NUMBER}.example"  >> $GITHUB_ENV
+
+            - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
+              if: steps.check_label.outputs.result == 'Preview'
+              name: Start preview deploy
+              id: start
+              with:
+                  step: start
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  head_ref: ${{ github.head_ref || github.ref_name }}
+                  env: ${{ env.PREVIEW_ENV }}
+                  env_url: ${{ env.PREVIEW_ENV_URL }}
+
+            - run: true
+              if: steps.check_label.outputs.result == 'Preview'
+
+            - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
+              if: always() && steps.check_label.outputs.result == 'Preview'
+              name: Finish preview deploy
+              with:
+                  step: finish
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment_id: ${{ steps.start.outputs.deployment_id }}
+                  head_ref: ${{ github.head_ref || github.ref_name }}
+                  env: ${{ env.PREVIEW_ENV }}
+                  env_url: ${{ env.PREVIEW_ENV_URL }}
+                  status: ${{ job.status }}

@@ -1,0 +1,73 @@
+name: "Setup TypeScript Scripts"
+description: "Build TypeScript scripts"
+inputs:
+    path:
+        description: "Path to the scripts"
+        default: ./.github
+        required: true
+runs:
+    using: "composite"
+    steps:
+        - name: Setup environment
+          shell: bash
+          run: |
+              test -f .nvmrc || exit 0
+              NODE_VERSION=$(cat .nvmrc | xargs)
+              echo "node_version=$NODE_VERSION" >> $GITHUB_ENV
+
+        - name: Setup node
+          uses: actions/setup-node@v3
+          with:
+              node-version: ${{ env.node_version }}
+              cache: npm
+              cache-dependency-path: ${{ inputs.path }}/package-lock.json
+
+        - name: Get npm cache directory
+          id: npm-cache-dir
+          shell: bash
+          run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+        - uses: actions/cache@v3
+          id: npm-cache
+          with:
+              path: |
+                  ${{ steps.npm-cache-dir.outputs.dir }}
+              key: |
+                  setup-ts-scripts-npm-${{ runner.os }}-${{ hashFiles(format('{0}/{1}', inputs.path, 'package-lock.json')) }}
+              restore-keys: |
+                  setup-ts-scripts-npm-${{ runner.os }}-
+
+        - name: Install dependencies
+          shell: bash
+          run: |
+              cd ${{ inputs.path }}
+              npm ci
+
+        - uses: actions/cache@v3
+          id: build-cache
+          with:
+              path: |
+                  ${{ inputs.path }}/dist
+              key: |
+                  setup-ts-scripts-build-${{ runner.os }}-${{ hashFiles(format('{0}/{1}', inputs.path, 'src/*.ts')) }}
+
+        - name: Lint
+          if: steps.build-cache.outputs.cache-hit != 'true'
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: |
+              npm run format:check
+
+        - name: Test
+          if: steps.build-cache.outputs.cache-hit != 'true'
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: |
+              npm run test
+
+        - name: Build
+          if: steps.build-cache.outputs.cache-hit != 'true'
+          shell: bash
+          working-directory: ${{ inputs.path }}
+          run: |
+              npm run build
