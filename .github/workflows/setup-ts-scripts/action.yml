@@ -22,13 +22,34 @@ runs:
               cache: npm
               cache-dependency-path: ${{ inputs.path }}/package-lock.json
 
+        - name: Get npm cache directory
+          id: npm-cache-dir
+          shell: bash
+          run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+        - uses: actions/cache@v3
+          id: npm-cache
+          with:
+              path: ${{ steps.npm-cache-dir.outputs.dir }}
+              key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+              restore-keys: |
+                  ${{ runner.os }}-node-
+
         - name: Install dependencies
+          if: steps.cache.outputs.npm-cache != 'true'
           shell: bash
           run: |
               cd ${{ inputs.path }}
               npm ci
 
+        - uses: actions/cache@v3
+          id: build-cache
+          with:
+              path: ${{ inputs.path }}/out
+              key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
         - name: Build TypeScript scripts
+          if: steps.cache.outputs.build-cache != 'true'
           shell: bash
           run: |
               cd ${{ inputs.path }}
