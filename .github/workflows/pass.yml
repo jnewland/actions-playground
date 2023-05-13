@@ -1,21 +1,21 @@
 name: required pass
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+    pull_request:
+        types:
+            - opened
+            - synchronize
 
-  schedule:
-    - cron: "*/15 * * * *"
+    schedule:
+        - cron: "*/15 * * * *"
 
 jobs:
-  pass:
-    runs-on: ubuntu-latest
-    steps:
-      - name: sleep
-        run: |
-          sleep 30
-          true
-      - name: pass
-        run: |
-          true
+    pass:
+        runs-on: ubuntu-latest
+        steps:
+            - name: sleep
+              run: |
+                  sleep 30
+                  true
+            - name: pass
+              run: |
+                  true

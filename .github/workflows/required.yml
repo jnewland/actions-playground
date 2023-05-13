@@ -1,83 +1,83 @@
 name: Required
 
 on:
-  workflow_run:
-    workflows:
-      - required pass
-      - required debug
-    types:
-      - completed
+    workflow_run:
+        workflows:
+            - required pass
+            - required debug
+        types:
+            - completed
 
 jobs:
-  success:
-    if: github.event.workflow_run.event == 'pull_request'
-    name: Create appropriate status
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v6
-        env:
-          RUN_ID: ${{ github.event.workflow_run.id }}
-          STATUS_NAME: Required
-        with:
-          retries: 2
-          script: |
-            const workflow = await github.rest.actions.getWorkflowRun({
-              ...context.repo,
-              run_id: process.env.RUN_ID
-            });
+    success:
+        if: github.event.workflow_run.event == 'pull_request'
+        name: Create appropriate status
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/github-script@v6
+              env:
+                  RUN_ID: ${{ github.event.workflow_run.id }}
+                  STATUS_NAME: Required
+              with:
+                  retries: 2
+                  script: |
+                      const workflow = await github.rest.actions.getWorkflowRun({
+                        ...context.repo,
+                        run_id: process.env.RUN_ID
+                      });
 
-            // list all workflows runs for the same head_sha
-            const workflowRuns = await github.rest.actions.listWorkflowRunsForRepo({
-              ...context.repo,
-              head_sha:      workflow.data.head_sha
-            });
+                      // list all workflows runs for the same head_sha
+                      const workflowRuns = await github.rest.actions.listWorkflowRunsForRepo({
+                        ...context.repo,
+                        head_sha:      workflow.data.head_sha
+                      });
 
-            // loop through all required build
-            var foundRequired = false;
-            for (const workflowRun of workflowRuns.data.workflow_runs) {
-              if (! workflowRun.name.match(/required/i)) {
-                continue;
-              }
-              foundRequired = true;
+                      // loop through all required build
+                      var foundRequired = false;
+                      for (const workflowRun of workflowRuns.data.workflow_runs) {
+                        if (! workflowRun.name.match(/required/i)) {
+                          continue;
+                        }
+                        foundRequired = true;
 
-              // bail and return failure if any have failed
-              if (workflowRun.conclusion == 'failure') {
-                await github.rest.repos.createCommitStatus({
-                  ...context.repo,
-                  sha:         workflow.data.head_sha,
-                  state:       'failure',
-                  context:     process.env.STATUS_NAME,
-                  description: 'The ' + workflowRun.name + ' workflow reports ' + workflowRun.conclusion + '.',
-                  target_url:  workflowRun.html_url
-                });
-                return;
-              }
+                        // bail and return failure if any have failed
+                        if (workflowRun.conclusion == 'failure') {
+                          await github.rest.repos.createCommitStatus({
+                            ...context.repo,
+                            sha:         workflow.data.head_sha,
+                            state:       'failure',
+                            context:     process.env.STATUS_NAME,
+                            description: 'The ' + workflowRun.name + ' workflow reports ' + workflowRun.conclusion + '.',
+                            target_url:  workflowRun.html_url
+                          });
+                          return;
+                        }
 
-              // bail silently if builds are in progress somehow
-              if (workflowRun.conclusion != 'success') {
-                return
-              }
+                        // bail silently if builds are in progress somehow
+                        if (workflowRun.conclusion != 'success') {
+                          return
+                        }
 
-              // report pending if we have at least one success
-              await github.rest.repos.createCommitStatus({
-                ...context.repo,
-                sha:         workflow.data.head_sha,
-                state:       'pending',
-                context:     process.env.STATUS_NAME,
-                description: 'Some required builds are still pending.',
-                target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
-              });
+                        // report pending if we have at least one success
+                        await github.rest.repos.createCommitStatus({
+                          ...context.repo,
+                          sha:         workflow.data.head_sha,
+                          state:       'pending',
+                          context:     process.env.STATUS_NAME,
+                          description: 'Some required builds are still pending.',
+                          target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
+                        });
 
-            }
+                      }
 
-            // report success if we observed at least one required workflow with a conclusion of success
-            if (foundRequired) {
-              await github.rest.repos.createCommitStatus({
-                ...context.repo,
-                sha:         workflow.data.head_sha,
-                state:       'success',
-                context:     process.env.STATUS_NAME,
-                description: 'All required workflows have succeeded.',
-                target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
-              });
-            }
+                      // report success if we observed at least one required workflow with a conclusion of success
+                      if (foundRequired) {
+                        await github.rest.repos.createCommitStatus({
+                          ...context.repo,
+                          sha:         workflow.data.head_sha,
+                          state:       'success',
+                          context:     process.env.STATUS_NAME,
+                          description: 'All required workflows have succeeded.',
+                          target_url:  'https://github.com/' + context.repository + '/commit/' +  workflow.data.head_sha + '/checks'
+                        });
+                      }

@@ -2,7 +2,8 @@
     "compilerOptions": {
         "module": "CommonJS",
         "target": "ES5",
-        "strict": true
+        "strict": true,
+        "outDir": "dist"
     },
     "include": ["src/**/*.ts"]
 }

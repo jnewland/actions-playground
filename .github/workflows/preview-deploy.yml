@@ -9,7 +9,6 @@ on:
             - synchronize
     workflow_dispatch:
 
-
 jobs:
     self-document:
         name: |
@@ -46,27 +45,12 @@ jobs:
             pull-requests: read
             issues: read
         steps:
-            # In the case of a pull_request event, the PR number is available in
-            # the event payload, along with a head_ref member on the GitHub
-            # context. In the case of a workflow_dispatch event, a ref_name
-            # member is available, but not a PR number. If we don't have a PR
-            # number, look it up based on the ref_name. In all cases, assign the
-            # PR number to the PR_NUMBER environment variable and the correct
-            # ref to the REF environment variable for subsequent use.
+            # Denormalize ref
+            # Setup
             - name: Configure environment
               env:
-                  PR_NUMBER: ${{ github.event.pull_request.number }}
                   REF: ${{ github.head_ref || github.ref_name }}
-                  GH_TOKEN: ${{ github.token }}
               run: |
-                  if [ -z "$PR_NUMBER" ]; then
-                      PR_NUMBER=$(gh pr list --search "head:${REF}" --json number --jq '.[0].number')
-                      if [ -z "$PR_NUMBER" ]; then
-                          echo "Could not find PR for ${REF}"
-                          exit 1
-                      fi
-                  fi
-                  echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
                   echo "REF=$REF" >> $GITHUB_ENV
 
                   # Set the preview environment name and URL too
@@ -75,26 +59,35 @@ jobs:
 
             - name: Checkout repository
               uses: actions/checkout@v3
-    
+
+            - name: Setup TypeScript scripts
+              uses: ./.github/workflows/setup-ts-scripts
+
+            - name: Set PR_NUMBER
+              id: prNumber
+              uses: ./.github/workflows/run-ts-script
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: prNumber
 
             - id: check_label
               uses: actions/github-script@v6
               env:
-                PR_NUMBER: ${{ env.PR_NUMBER }}
+                  PR_NUMBER: ${{ env.PR_NUMBER }}
               with:
-                result-encoding: string
-                script: |
-                  var label = await github.paginate(
-                    github.rest.issues.listLabelsOnIssue,
-                    {
-                      ...context.repo,
-                      issue_number: process.env.PR_NUMBER,
-                    },
-                    (response) => response.data.filter(
-                      (label) => label.name == 'Preview'
-                    )
-                  )
-                  if (label.length === 1) { return 'true' }
+                  result-encoding: string
+                  script: |
+                      var label = await github.paginate(
+                        github.rest.issues.listLabelsOnIssue,
+                        {
+                          ...context.repo,
+                          issue_number: process.env.PR_NUMBER,
+                        },
+                        (response) => response.data.filter(
+                          (label) => label.name == 'Preview'
+                        )
+                      )
+                      if (label.length === 1) { return 'true' }
 
             - uses: urcomputeringpal/pr-preview-deploy-ux-action@v0.0.5
               if: steps.check_label.outputs.result == 'true'

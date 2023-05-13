@@ -1,9 +1,10 @@
 name: "Setup TypeScript Scripts"
 description: "Build TypeScript scripts"
 inputs:
-  path:
-    description: 'Path to the scripts'
-    required: true
+    path:
+        description: "Path to the scripts"
+        default: ./.github
+        required: true
 runs:
     using: "composite"
     steps:

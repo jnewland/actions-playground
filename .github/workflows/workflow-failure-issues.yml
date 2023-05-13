@@ -1,24 +1,24 @@
 name: open issues on workflow failure, close on success
 on:
-  workflow_run:
-    workflows:
-    # Add more workflows here!
-      - debug
-    types:
-      - completed
+    workflow_run:
+        workflows:
+            # Add more workflows here!
+            - debug
+        types:
+            - completed
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
-  workflow-failure-issues:
-    uses: urcomputeringpal/.github/.github/workflows/workflow-failure-issues.yaml@main
-    if: |
-      (
-        github.event_name == 'schedule' ||
-        github.event.workflow_run.head_branch == github.event.repository.default_branch
-      )
+    debug:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Dump GitHub context
+              env:
+                  GITHUB_CONTEXT: ${{ toJson(github) }}
+              run: |
+                  echo "$GITHUB_CONTEXT"
+    workflow-failure-issues:
+        uses: urcomputeringpal/.github/.github/workflows/workflow-failure-issues.yaml@main
+        if: |
+            (
+              github.event_name == 'schedule' ||
+              github.event.workflow_run.head_branch == github.event.repository.default_branch
+            )

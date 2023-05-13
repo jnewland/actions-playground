@@ -1,17 +1,17 @@
 name: fail
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+    pull_request:
+        types:
+            - opened
+            - synchronize
 
-  schedule:
-    - cron: "*/15 * * * *"
+    schedule:
+        - cron: "*/15 * * * *"
 
 jobs:
-  fail:
-    runs-on: ubuntu-latest
-    steps:
-      - name: fail
-        run: |
-          false
+    fail:
+        runs-on: ubuntu-latest
+        steps:
+            - name: fail
+              run: |
+                  false

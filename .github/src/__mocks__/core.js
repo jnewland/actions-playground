@@ -1,0 +1,45 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.notice =
+    exports.getIDToken =
+    exports.warning =
+    exports.error =
+    exports.isDebug =
+    exports.setCommandEcho =
+    exports.getState =
+    exports.saveState =
+    exports.group =
+    exports.endGroup =
+    exports.startGroup =
+    exports.debug =
+    exports.getBooleanInput =
+    exports.getMultilineInput =
+    exports.addPath =
+    exports.setSecret =
+    exports.exportVariable =
+    exports.info =
+    exports.setFailed =
+    exports.setOutput =
+    exports.getInput =
+        void 0;
+exports.getInput = jest.fn();
+exports.setOutput = jest.fn();
+exports.setFailed = jest.fn();
+exports.info = jest.fn();
+exports.exportVariable = jest.fn();
+exports.setSecret = jest.fn();
+exports.addPath = jest.fn();
+exports.getMultilineInput = jest.fn();
+exports.getBooleanInput = jest.fn();
+exports.debug = jest.fn();
+exports.startGroup = jest.fn();
+exports.endGroup = jest.fn();
+exports.group = jest.fn();
+exports.saveState = jest.fn();
+exports.getState = jest.fn();
+exports.setCommandEcho = jest.fn();
+exports.isDebug = jest.fn();
+exports.error = jest.fn();
+exports.warning = jest.fn();
+exports.getIDToken = jest.fn();
+exports.notice = jest.fn();

@@ -11,7 +11,7 @@ See https://github.com/actions/github-script/ for more information. Set
 - name: Setup TypeScript scripts
   uses: ./.github/ts-actions/setup-ts-scripts
   with:
-    path: ./.github/ts-actions
+      path: ./.github/ts-actions
 
 - name: Run script1
   # script1.ts can use core.setOutput('result', 'some value') to set a named output
@@ -19,7 +19,7 @@ See https://github.com/actions/github-script/ for more information. Set
   id: script1
   uses: ./.github/ts-actions/run-ts-script
   with:
-      function-name: script1
+      script: script1
 
 - name: Use script1 result
   run: |
