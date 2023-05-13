@@ -16,5 +16,5 @@ gh act -l
 
 gh act pull_request \
     -s GITHUB_TOKEN=${GITHUB_TOKEN} \
-    -W .github/workflows/ts-actions-example.yml \
+    -W .github/workflows/ts-script-example.yml \
     -e .github/fixtures/pull_request/main.json

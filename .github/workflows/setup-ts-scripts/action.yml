@@ -33,9 +33,9 @@ runs:
               path: |
                   ${{ steps.npm-cache-dir.outputs.dir }}
               key: |
-                  setup-ts-scripts-${{ runner.os }}-npm-${{ hashFiles(format('{0}/{1}', inputs.path, 'package-lock.json')) }}
+                  setup-ts-scripts-npm-${{ runner.os }}-${{ hashFiles(format('{0}/{1}', inputs.path, 'package-lock.json')) }}
               restore-keys: |
-                  setup-ts-scripts-${{ runner.os }}-npm-
+                  setup-ts-scripts-npm-${{ runner.os }}-
 
         - name: Install dependencies
           shell: bash
@@ -49,7 +49,7 @@ runs:
               path: |
                   ${{ inputs.path }}/dist
               key: |
-                  setup-ts-scripts-${{ runner.os }}-build-${{ hashFiles(format('{0}/{1}', inputs.path, 'src/*.ts')) }}
+                  setup-ts-scripts-build-${{ runner.os }}-${{ hashFiles(format('{0}/{1}', inputs.path, 'src/*.ts')) }}
 
         - name: Lint
           if: steps.build-cache.outputs.cache-hit != 'true'
