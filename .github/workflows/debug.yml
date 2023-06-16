@@ -4,10 +4,6 @@ on:
     types:
       - opened
       - synchronize
-
-  schedule:
-    - cron: "*/15 * * * *"
-
 jobs:
   debug:
     runs-on: ubuntu-latest
