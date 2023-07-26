@@ -9,10 +9,18 @@ jobs:
       - name: fail
         run: |
           false
-  test:
+  run-test:
     runs-on: ubuntu-latest
     needs: setup
     steps:
       - name: skip
         run: |
           echo not run
+  required:
+    name: test
+    needs: [setup, run-test]
+    if: failure() || cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependent jobs failed or were cancelled
+        run: exit 1    
