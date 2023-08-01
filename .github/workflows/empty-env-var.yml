@@ -6,13 +6,13 @@ jobs:
   empty:
     runs-on: ubuntu-latest
     steps:
-      - name: fail
+      - name: debug
         env:
             NULL_VALUE: ${{ null }}
             EMPTY_VALUE: ""
         run: |
           env | grep NULL_VALUE && echo "NULL_VALUE present" || true
-          [ -n "$NULL_VALUE" ] && echo "NULL_VALUE empty" || true
+          [ -z "$NULL_VALUE" ] && echo "NULL_VALUE empty" || true
           env | grep EMPTY_VALUE && echo "EMPTY_VALUE present" || true
-          [ -n "$EMPTY_VALUE" ] && echo "EMPTY_VALUE empty" || true
+          [ -z "$EMPTY_VALUE" ] && echo "EMPTY_VALUE empty" || true
 
