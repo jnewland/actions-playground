@@ -1,0 +1,20 @@
+name: empty env var
+on:
+  push:
+
+jobs:
+  empty:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail
+        env:
+            NULL_VALUE: ${{ null }}
+            EMPTY_VALUE: ""
+        run: |
+          set -x
+          set +e
+          env | grep NULL_VALUE && echo NULL_VALUE present
+          [ -n "$NULL_VALUE" ] && echo NULL_VALUE empty
+          env | grep EMPTY_VALUE && echo EMPTY_VALUE present
+          [ -n "$EMPTY_VALUE" ] && echo EMPTY_VALUE empty
+
