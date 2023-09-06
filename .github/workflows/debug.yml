@@ -1,4 +1,4 @@
-name: required debug
+name: debug
 on:
   pull_request:
     types:
@@ -17,3 +17,4 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
+          [ $((RANDOM % 2)) -eq 0 ]
