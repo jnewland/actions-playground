@@ -1,22 +1,17 @@
-name: open issues on workflow failure, close on success
+name: Workflow Failure Issues
 on:
   workflow_run:
     workflows:
-    # Add more workflows here!
+      # List your workflow's full name here
       - debug
-    types:
+      # Add a template to customize the issue for each workflow.
+      # For .github/your-critical-workflow.yml:
+      #     .github/your-critical-workflow-issue-template.md
+types:
       - completed
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
   workflow-failure-issues:
-    uses: urcomputeringpal/.github/.github/workflows/workflow-failure-issues.yaml@main
+    uses: urcomputeringpal/workflow-failure-issues/.github/workflows/workflow-failure-issues.yml@v0.0.1
     if: |
       (
         github.event_name == 'schedule' ||
