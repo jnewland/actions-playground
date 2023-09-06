@@ -7,7 +7,7 @@ on:
       # Add a template to customize the issue for each workflow.
       # For .github/your-critical-workflow.yml:
       #     .github/your-critical-workflow-issue-template.md
-types:
+    types:
       - completed
 jobs:
   workflow-failure-issues:
