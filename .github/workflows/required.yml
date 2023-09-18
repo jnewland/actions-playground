@@ -9,6 +9,15 @@ on:
       - completed
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+          [ $((RANDOM % 2)) -eq 0 ]
   success:
     if: github.event.workflow_run.event == 'pull_request'
     name: Create appropriate status
