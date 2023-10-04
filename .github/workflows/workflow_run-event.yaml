@@ -2,6 +2,7 @@ name: workflow_run event bug
 
 on:
   workflow_run:
+  
     types:
       - completed
     branches:
