@@ -1,0 +1,20 @@
+name: workflow_run event bug
+
+on:
+  workflow_run:
+    types:
+      - completed
+    branches:
+      - main
+
+run-name: ${{ github.event.workflow_run.event }} ${{ github.event.workflow_run.pull_requests.*.number }}
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
