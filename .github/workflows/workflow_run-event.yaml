@@ -2,7 +2,8 @@ name: workflow_run event bug
 
 on:
   workflow_run:
-  
+    workflows:
+      - debug
     types:
       - completed
     branches:
