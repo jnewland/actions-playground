@@ -1,6 +1,8 @@
 name: debug
 on:
   push:
+    branches:
+      - "**jnewland-patch*"
   workflow_dispatch:
   pull_request:
     types:
