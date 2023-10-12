@@ -1,0 +1,21 @@
+name: approve-your-own-prs
+on:
+  push:
+    branches:
+      # your branch here
+      - approve-your-own-prs
+jobs:
+  pull-request:
+    name: Open PR to main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout
+        # this action will create a PR from the contents of approve-your-own-prs using the
+        # github-actions bot account
+        # since that's not you, you can approve the PR and merge it
+      - uses: repo-sync/pull-request@v2
+        name: pull-request
+        with:
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
