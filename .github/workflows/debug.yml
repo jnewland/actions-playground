@@ -16,4 +16,5 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
+          pwd
           [ $((RANDOM % 2)) -eq 0 ]
