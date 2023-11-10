@@ -14,11 +14,11 @@ jobs:
     strategy:
         fail-fast: false
         matrix:
-            target: ["a", "b"]
-
             include:
                 - namez: default
+                  target: a
                 - namez: candidate
+                  target: b
 
     steps:
       - name: Dump GitHub context
