@@ -9,7 +9,7 @@ on:
 
 jobs:
   debug:
-    name: ${{ matrix.name }} ${{ matrix.target }} 
+    name: ${{ matrix.namez }} ${{ matrix.target }} 
     runs-on: ubuntu-latest
     strategy:
         fail-fast: false
@@ -17,8 +17,8 @@ jobs:
             target: ["a", "b"]
 
             include:
-                - name: default
-                - name: candidate
+                - namez: default
+                - namez: candidate
 
     steps:
       - name: Dump GitHub context
