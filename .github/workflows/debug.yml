@@ -9,7 +9,17 @@ on:
 
 jobs:
   debug:
+    name: ${matrix.name} ${matrix.target}
     runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+            target: ["a", "b"]
+
+            include:
+                - name: default
+                - name: candidate
+
     steps:
       - name: Dump GitHub context
         env:
