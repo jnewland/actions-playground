@@ -34,8 +34,8 @@ jobs:
     runs-on: ubuntu-latest    
     strategy:
       matrix:
-        fruit: [apple, pear]
-        animal: [cat, dog]
+        # fruit: [apple, pear]
+        # animal: [cat, dog]
         include:
           - color: green
           - color: pink
