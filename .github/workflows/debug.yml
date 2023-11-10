@@ -39,12 +39,12 @@ jobs:
         include:
           - color: green
           - color: pink
-            animal: cat
-          - fruit: apple
-            shape: circle
-          - fruit: banana
-          - fruit: banana
-            animal: cat
+          #   animal: cat
+          # - fruit: apple
+          #   shape: circle
+          # - fruit: banana
+          # - fruit: banana
+          #   animal: cat
     steps:
       - name: Dump GitHub context
         env:
