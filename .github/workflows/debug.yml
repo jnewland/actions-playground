@@ -9,7 +9,7 @@ on:
 
 jobs:
   debug:
-    name: ${matrix.name} ${matrix.target}
+    name: ${{ matrix.name }} ${{ matrix.target }} 
     runs-on: ubuntu-latest
     strategy:
         fail-fast: false
