@@ -31,10 +31,10 @@ jobs:
       - name: Retrieve Logs for Each Matrix Job
         env:
           GH_TOKEN: ${{ github.token }}
-          NEEDS: job1
+          NEEDS: 'job1.*'
         run: |
           gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs
-          JOB_IDS=$(gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs --jq '[.jobs[] | select(.name=="${{ env.NEEDS }}") | .id]')
+          JOB_IDS=$(echo "$JOB_DETAILS" | jq -r --arg needs "${{ env.NEEDS }}" '.jobs[] | select(.name | test($needs)) | .id')
           echo "Job IDs: $JOB_IDS"
           
           # Install jq for parsing JSON
