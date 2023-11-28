@@ -3,20 +3,23 @@ name: Log Retrieval Workflow
 on:
   pull_request:
 
+
 jobs:
   job1:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        test: [one, two]
+        config:
+          - 1
+          - 2
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Run Some Commands
+      - name: Run Commands for Matrix ${{ matrix.config }}
         run: |
-          echo "Executing some commands: ${{ matrix.test }}"
-          echo "This will generate logs"
+          echo "Executing commands for matrix element ${{ matrix.config }}"
+          echo "This will generate logs for matrix element ${{ matrix.config }}"
 
   retrieve-logs:
     runs-on: ubuntu-latest
@@ -25,25 +28,30 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Retrieve Logs
+      - name: Retrieve Logs for Each Matrix Job
         env:
           GH_TOKEN: ${{ github.token }}
+          NEEDS: job1
         run: |
-          JOB_ID=$(gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs --jq '.jobs[] | select(.name=="job1") | .id')
-          echo "Job ID of job1: $JOB_ID"
+          JOB_IDS=$(gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs --jq '[.jobs[] | select(.name=="${{ env.NEEDS }}") | .id]')
+          echo "Job IDs: $JOB_IDS"
           
           # Install jq for parsing JSON
           sudo apt-get install jq
 
-          # Get the logs URL
-          LOGS_URL=$(curl -s -H "Authorization: token $GH_TOKEN" \
-                    "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/$JOB_ID/logs" -D - \
-                    | grep location | cut -d " " -f 2 | tr -d '\r')
+          for JOB_ID in $(echo $JOB_IDS | jq -r '.[]'); do
+            echo "Retrieving logs for Job ID: $JOB_ID"
 
-          echo "Logs URL: $LOGS_URL"
+            # Get the logs URL
+            LOGS_URL=$(curl -s -H "Authorization: token $GH_TOKEN" \
+                      "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/$JOB_ID/logs" -D - \
+                      | grep location | cut -d " " -f 2 | tr -d '\r')
 
-          # Download the logs
-          curl -L $LOGS_URL -o job1_logs.txt
-          
-          # Optional: Display the logs
-          cat job1_logs.txt
+            echo "Logs URL: $LOGS_URL"
+
+            # Download the logs
+            curl -L $LOGS_URL -o "logs_job_${JOB_ID}.txt"
+
+            # Optional: Display the logs
+            cat "logs_job_${JOB_ID}.txt"
+          done
