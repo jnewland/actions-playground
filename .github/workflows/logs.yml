@@ -1,0 +1,43 @@
+name: Log Retrieval Workflow
+
+on: [push]
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Run Some Commands
+        run: |
+          echo "Executing some commands"
+          echo "This will generate logs"
+
+  retrieve-logs:
+    runs-on: ubuntu-latest
+    needs: job1
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Retrieve Logs
+        run: |
+          JOB_ID=$(gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs --jq '.jobs[] | select(.name=="job1") | .id')
+          echo "Job ID of job1: $JOB_ID"
+          
+          # Install jq for parsing JSON
+          sudo apt-get install jq
+
+          # Get the logs URL
+          LOGS_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                    "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/$JOB_ID/logs" -D - \
+                    | grep location | cut -d " " -f 2 | tr -d '\r')
+
+          echo "Logs URL: $LOGS_URL"
+
+          # Download the logs
+          curl -L $LOGS_URL -o job1_logs.txt
+          
+          # Optional: Display the logs
+          cat job1_logs.txt
