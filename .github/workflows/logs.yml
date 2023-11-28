@@ -33,12 +33,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NEEDS: 'job1.*'
         run: |
-          gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs
+          JOB_DETAILS=$(gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs)
           JOB_IDS=$(echo "$JOB_DETAILS" | jq -r --arg needs "${{ env.NEEDS }}" '.jobs[] | select(.name | test($needs)) | .id')
           echo "Job IDs: $JOB_IDS"
           
-          # Install jq for parsing JSON
-          sudo apt-get install jq
 
           for JOB_ID in $(echo $JOB_IDS | jq -r '.[]'); do
             echo "Retrieving logs for Job ID: $JOB_ID"
