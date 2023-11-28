@@ -33,6 +33,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NEEDS: job1
         run: |
+          gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs
           JOB_IDS=$(gh api -X GET repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs --jq '[.jobs[] | select(.name=="${{ env.NEEDS }}") | .id]')
           echo "Job IDs: $JOB_IDS"
           
