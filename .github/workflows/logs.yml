@@ -38,7 +38,7 @@ jobs:
           echo "Job IDs: $JOB_IDS"
           
 
-          for JOB_ID in $(echo $JOB_IDS | jq -r '.[]'); do
+          for JOB_ID in $JOB_IDS; do
             echo "Retrieving logs for Job ID: $JOB_ID"
 
             # Get the logs URL
