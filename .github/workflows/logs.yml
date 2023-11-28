@@ -6,13 +6,16 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test: [one, two]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Run Some Commands
         run: |
-          echo "Executing some commands"
+          echo "Executing some commands: ${{ matrix.test }}"
           echo "This will generate logs"
 
   retrieve-logs:
