@@ -12,6 +12,7 @@ on:
 
 jobs:
   pass:
+    name: Pass
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
