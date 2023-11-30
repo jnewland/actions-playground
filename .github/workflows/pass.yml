@@ -37,15 +37,18 @@ jobs:
           echo "This PR's base is [\`${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/commit/${{ github.event.pull_request.base.sha }}/checks)."
           echo "The last commit pushed to this PR is [\`${{ github.event.pull_request.head.sha }}\`](${REPO_URL}/commit/${{ github.event.pull_request.head.sha }}/checks)."
           echo "We're building [\`${{ steps.setSHAs.outputs.head }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.head }}/checks), the SHA of the merge branch."
-          echo "[${{ github.workflow }}](${REPO_URL}/actions/workflows/${{ github.workflow }}/runs?branch=${BASE_REF}) last passed on ${BASE_REF} at [\`${{ steps.setSHAs.outputs.base }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.base}}/checks)"
           } | tee -a $GITHUB_STEP_SUMMARY
 
           if [ "${{ steps.setSHAs.outputs.base }}" != "${{ github.event.pull_request.base.sha }}" ]; then
           {
             echo "This workflow hasn't yet passed on the latest commit on ${BASE_REF}: [\`${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/compare/${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }})."
-            echo "Recent attempts on ${BASE_REF}: [\`${{ steps.setSHAs.outputs.base }}\`](${REPO_URL}/actions/workflows/${{ github.workflow }}/runs?branch=${BASE_REF})"
+          } | tee -a $GITHUB_STEP_SUMMARY
+          else
+          {
+            echo "This workflow has passed on the latest commit on ${BASE_REF}: [\`${{ steps.setSHAs.outputs.base }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.base }}/checks)."
           } | tee -a $GITHUB_STEP_SUMMARY
           fi
+
 
       - name: sleep
         run: |
