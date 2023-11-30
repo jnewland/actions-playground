@@ -22,17 +22,29 @@ jobs:
           fetch-depth: 0
           show-progress: false
 
-      - name: Compute the base and head of the PR and this workflow's success on main
+      - name: Compute the base and head of the PR and this workflow's success on ${{ github.event.pull_request.base.ref }}
         id: setSHAs
         uses: nrwl/nx-set-shas@v4
         with:
-          main-branch-name: main
+          main-branch-name: ${{ github.event.pull_request.base.ref }}
 
-      - run: |
-          echo "PR BASE: ${{ github.event.pull_request.base.sha }}"
-          echo "PR HEAD: ${{ github.event.pull_request.head.sha }}"
-          echo "Workflow BASE: ${{ steps.setSHAs.outputs.base }}"
-          echo "Workflow HEAD: ${{ steps.setSHAs.outputs.head }}"
+      - name: summarize
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+        run: |
+          {
+          echo "This PR's base is [`${{ github.event.pull_request.base.sha }}`](https://${{ github.server_url }}/${{ github.repository }}/commits/${{ github.event.pull_request.base.sha }})."
+          echo "The last commit pushed to this PR is [${{ github.event.pull_request.head.sha }}](https://${{ github.server_url }}/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }})."
+          echo "We're building [`${{ steps.setSHAs.outputs.head }}`](https://${{ github.server_url }}/${{ github.repository }}/commits/${{ steps.setSHAs.outputs.head }}), the SHA of the merge branch."
+          echo "${{ github.workflow }} last passed on $BASE at [`${{ steps.setSHAs.outputs.base }}`](https://${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ steps.setSHAs.outputs.base}}))"
+          } | tee -a $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.setSHAs.outputs.base }}" != "${{ github.event.pull_request.base.sha }}" ]; then
+          {
+            echo "This workflow hasn't yet passed on the latest commit on $BASE: [`${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }}`](https://${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }})."
+            echo "Recent attempts on $BASE: [`${{ steps.setSHAs.outputs.base }}`](https://${{ github.server_url }}/${{ github.repository }}/actions/workflows/${{ github.workflow }}/runs?branch=${{ github.event.pull_request.base.ref }})"
+          } | tee -a $GITHUB_STEP_SUMMARY
+          fi
 
       - name: sleep
         run: |
