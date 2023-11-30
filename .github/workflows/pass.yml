@@ -8,12 +8,32 @@ on:
       - opened
       - synchronize
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "0 * * * *"
 
 jobs:
   pass:
     runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      actions: "read"
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Compute the base and head of the PR and this workflow's success on main
+        id: setSHAs
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: main
+
+      - run: |
+          echo "PR BASE: ${{ github.event.pull_request.base.sha }}"
+          echo "PR HEAD: ${{ github.event.pull_request.head.sha }}"
+          echo "Workflow BASE: ${{ steps.setSHAs.outputs.base }}"
+          echo "Workflow HEAD: ${{ steps.setSHAs.outputs.head }}"
+
       - name: sleep
         run: |
           sleep 30
