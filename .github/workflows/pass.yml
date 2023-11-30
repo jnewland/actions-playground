@@ -42,7 +42,8 @@ jobs:
 
           if [ "${{ steps.setSHAs.outputs.base }}" != "${{ github.event.pull_request.base.sha }}" ]; then
           {
-            echo "This workflow hasn't yet passed on the latest commit on ${BASE_REF}: [\`${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/compare/${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }})."
+            echo "This workflow hasn't yet passed on the latest commit on ${BASE_REF ([\`${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/commit/${{ github.event.pull_request.base.sha }}/checks)): the last successful run was on [\`${{ steps.setSHAs.outputs.base }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.base }}/checks).
+            echo "Changes not yet included in a completed build: [\`${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/compare/${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }})."
           } | tee -a $GITHUB_STEP_SUMMARY
           else
           {
