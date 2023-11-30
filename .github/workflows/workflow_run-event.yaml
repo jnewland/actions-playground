@@ -9,7 +9,7 @@ on:
     branches:
       - main
 
-run-name: ${{ github.event.workflow_run.event }} ${{ join(github.event.workflow_run.pull_requests.*.number || fromJson('[]'),'') }}
+run-name: ${{ github.event_name }} ${{ github.event.workflow_run.event }} ${{ join(github.event.workflow_run.pull_requests.*.number || fromJson('[]'),'') }}
 
 jobs:
   debug:

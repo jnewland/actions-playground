@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: sleep
         run: |
-          sleep 30
+          sleep 60
           true
       - name: pass
         run: |

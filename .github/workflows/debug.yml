@@ -9,11 +9,45 @@ on:
 
 jobs:
   debug:
+    name: ${{ matrix.namez }} ${{ matrix.target }} 
     runs-on: ubuntu-latest
+    strategy:
+        fail-fast: false
+        matrix:
+            include:
+                - namez: default
+                  target: a
+                - namez: candidate
+                  target: b
+
     steps:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           echo "$GITHUB_CONTEXT"
+          pwd
           [ $((RANDOM % 2)) -eq 0 ]
+
+  matrix:
+    name: ${{ toJson(matrix) }}
+    runs-on: ubuntu-latest    
+    strategy:
+      matrix:
+        # fruit: [apple, pear]
+        # animal: [cat, dog]
+        include:
+          - color: green
+          - color: pink
+          #   animal: cat
+          # - fruit: apple
+          #   shape: circle
+          # - fruit: banana
+          # - fruit: banana
+          #   animal: cat
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
