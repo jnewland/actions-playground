@@ -10,7 +10,7 @@ TREE_SHA=$(git show HEAD --format=raw | grep tree | awk '{print $2}')
   echo "This PR's base is [\`${PR_BASE_SHA}\`](${REPO_URL}/commit/${PR_BASE_SHA}/checks)."
   echo "The last commit pushed to this PR is [\`${PR_HEAD_SHA}\`](${REPO_URL}/commit/${PR_HEAD_SHA}/checks)."
   echo "We're building [\`${PR_MERGE_SHA}\`](${REPO_URL}/commit/${PR_MERGE_SHA}/checks), the SHA of the [merge branch](https://fluffyandflakey.blog/2022/12/21/what-is-a-github-pull-request-merge-branch/) created for this PR."
-  echo "The sha of the tree in the root of the repo is [\`${TREE_SHA}\`](${REPO_URL}/tree/${TREE_SHA})."
+  echo "The sha of the [tree](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#_tree_objects) in the root of the repo is \`${TREE_SHA}\`."
 } | tee -a "$GITHUB_STEP_SUMMARY"
 
 if [ "${WORKFLOW_BASE_SHA}" != "${PR_BASE_SHA}" ]; then
