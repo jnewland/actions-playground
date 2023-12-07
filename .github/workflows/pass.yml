@@ -31,25 +31,13 @@ jobs:
 
       - name: summarize
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        run: |
-          {
-          echo "This PR's base is [\`${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/commit/${{ github.event.pull_request.base.sha }}/checks)."
-          echo "The last commit pushed to this PR is [\`${{ github.event.pull_request.head.sha }}\`](${REPO_URL}/commit/${{ github.event.pull_request.head.sha }}/checks)."
-          echo "We're building [\`${{ steps.setSHAs.outputs.head }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.head }}/checks), the SHA of the merge branch."
-          } | tee -a $GITHUB_STEP_SUMMARY
-
-          if [ "${{ steps.setSHAs.outputs.base }}" != "${{ github.event.pull_request.base.sha }}" ]; then
-          {
-            echo "This workflow hasn't yet passed on the latest commit on ${BASE_REF ([\`${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/commit/${{ github.event.pull_request.base.sha }}/checks)): the last successful run was on [\`${{ steps.setSHAs.outputs.base }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.base }}/checks)."
-            echo "Changes not yet included in a completed build: [\`${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }}\`](${REPO_URL}/compare/${{ steps.setSHAs.outputs.base }}..${{ github.event.pull_request.base.sha }})."
-          } | tee -a $GITHUB_STEP_SUMMARY
-          else
-          {
-            echo "This workflow has passed on the latest commit on ${BASE_REF}: [\`${{ steps.setSHAs.outputs.base }}\`](${REPO_URL}/commit/${{ steps.setSHAs.outputs.base }}/checks)."
-          } | tee -a $GITHUB_STEP_SUMMARY
-          fi
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_MERGE_SHA: ${{ steps.setSHAs.outputs.head }}
+          WORKFLOW_BASE_SHA: ${{ steps.setSHAs.outputs.base }}
+        run: .github/summarize-shas.sh
 
 
       - name: sleep
